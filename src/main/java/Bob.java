@@ -6,5 +6,9 @@ public class Bob {
                 + "| |_) | (_) | |_) |\n"
                 + "|____/ \\___/|_.__/ \n";
         System.out.println(banner);
+        System.out.println("hello im bob !!");
+        System.out.println("how can i help :)");
+        System.out.println("lalalalalalalalalalalalalalala");
+        System.out.println("byebye !! have a good day");
     }
 }
