@@ -1,8 +1,13 @@
 import java.util.Scanner;
 
 public class Bob {
+    private static final int MAX_TASKS = 100;
+    private static final String DIVIDER = "____________________________________________________________";
+
     public static void main(String[] args) {
         Scanner scanner = new Scanner(System.in);
+        String[] tasks = new String[MAX_TASKS];
+        int taskCount = 0;
 
         String banner = " ____        _     \n"
                 + "| __ )  ___ | |__  \n"
@@ -13,6 +18,7 @@ public class Bob {
         System.out.println(banner);
         System.out.println("hello im bob !!");
         System.out.println("how can i help :)");
+        System.out.println(DIVIDER);
 
         while (true) {
             String input = scanner.nextLine();
@@ -20,10 +26,21 @@ public class Bob {
             if (input.equals("bye")) {
                 System.out.println("  yippee glad to have helped (＠＾◡＾)");
                 System.out.println("  byebye !! have a good day (๑˃ᴗ˂)ﻭ");
+                System.out.println(DIVIDER);
                 break;
             }
 
-            System.out.println(input);
+            if (input.equals("list")) {
+                for (int i = 0; i < taskCount; i++) {
+                    System.out.println((i + 1) + ". " + tasks[i]);
+                }
+            } else {
+                tasks[taskCount] = input;
+                taskCount++;
+                System.out.println("added: " + input);
+            }
+            System.out.println(DIVIDER);
         }
+        scanner.close();
     }
 }
