@@ -292,7 +292,71 @@ bye
 hello im bob !!
 how can i help :)
 ____________________________________________________________
- oopsies !! (´ ∀ ` *) pls try either one of list, todo, deadline, event, mark, unmark, or bye
+ oopsies !! (´ ∀ ` *) pls try either one of list, todo, deadline, event, mark, unmark, delete, or bye
+____________________________________________________________
+  yippee glad to have helped (＠＾◡＾)
+  byebye !! have a good day (๑˃ᴗ˂)ﻭ
+____________________________________________________________
+```
+
+## UI-011: Delete a task
+
+**Aim:** Verify that `delete` removes the selected task, reports the new count, and renumbers the remaining tasks.
+
+**Inputs:**
+
+```text
+todo read book
+deadline return book /by June 6th
+event project meeting /from Aug 6th 2pm /to 4pm
+todo join sports club
+todo borrow book
+delete 3
+list
+bye
+```
+
+**Expected output:**
+
+```text
+ ____        _     
+| __ )  ___ | |__  
+|  _ \ / _ \| '_ \ 
+| |_) | (_) | |_) |
+|____/ \___/|_.__/ 
+
+hello im bob !!
+how can i help :)
+____________________________________________________________
+ okays task added:
+   [T][ ] read book
+ you now have 1 tasks in the list, get to it !!
+____________________________________________________________
+ okays task added:
+   [D][ ] return book (by: June 6th)
+ you now have 2 tasks in the list, get to it !!
+____________________________________________________________
+ okays task added:
+   [E][ ] project meeting (from: Aug 6th 2pm to: 4pm)
+ you now have 3 tasks in the list, get to it !!
+____________________________________________________________
+ okays task added:
+   [T][ ] join sports club
+ you now have 4 tasks in the list, get to it !!
+____________________________________________________________
+ okays task added:
+   [T][ ] borrow book
+ you now have 5 tasks in the list, get to it !!
+____________________________________________________________
+ Noted. I've removed this task:
+   [E][ ] project meeting (from: Aug 6th 2pm to: 4pm)
+ Now you have 4 tasks in the list.
+____________________________________________________________
+ here are your tasks (⌒‿⌒) 加油 !! :
+ 1.[T][ ] read book
+ 2.[D][ ] return book (by: June 6th)
+ 3.[T][ ] join sports club
+ 4.[T][ ] borrow book
 ____________________________________________________________
   yippee glad to have helped (＠＾◡＾)
   byebye !! have a good day (๑˃ᴗ˂)ﻭ
