@@ -232,7 +232,7 @@ bye
 hello im bob !!
 how can i help :)
 ____________________________________________________________
- please include /by followed by the deadline
+ oopsies !! (´ ∀ ` *) a deadline needs /by and a date or time, eg play /by today
 ____________________________________________________________
   yippee glad to have helped (＠＾◡＾)
   byebye !! have a good day (๑˃ᴗ˂)ﻭ
@@ -262,7 +262,7 @@ bye
 hello im bob !!
 how can i help :)
 ____________________________________________________________
- please include /from and /to for the event
+ oopsies !! (´ ∀ ` *) an event needs /from and /to, eg event meeting /from 2pm /to 4pm
 ____________________________________________________________
   yippee glad to have helped (＠＾◡＾)
   byebye !! have a good day (๑˃ᴗ˂)ﻭ
@@ -292,7 +292,99 @@ bye
 hello im bob !!
 how can i help :)
 ____________________________________________________________
- sorry what??
+ oopsies !! (´ ∀ ` *) pls try either one of list, todo, deadline, event, mark, unmark, or bye
+____________________________________________________________
+  yippee glad to have helped (＠＾◡＾)
+  byebye !! have a good day (๑˃ᴗ˂)ﻭ
+____________________________________________________________
+```
+
+## UI-009: Reject empty task details
+
+**Aim:** Verify that task commands reject missing descriptions and date or time fields with specific guidance.
+
+**Inputs:**
+
+```text
+todo
+deadline /by Sunday
+deadline return book /by
+event /from 2pm /to 4pm
+event meeting /from  /to 4pm
+event meeting /from 2pm /to
+bye
+```
+
+**Expected output:**
+
+```text
+ ____        _     
+| __ )  ___ | |__  
+|  _ \ / _ \| '_ \ 
+| |_) | (_) | |_) |
+|____/ \___/|_.__/ 
+
+hello im bob !!
+how can i help :)
+____________________________________________________________
+ oopsies !! (´ ∀ ` *) oopsies a todo needs a desc, eg: todo sleep
+____________________________________________________________
+ oopsies !! (´ ∀ ` *) pls give a desc before /by.
+____________________________________________________________
+ oopsies !! (´ ∀ ` *) pls give a date or time after /by.
+____________________________________________________________
+ oopsies !! (´ ∀ ` *) pls gimme event desc before /from.
+____________________________________________________________
+ oopsies !! (´ ∀ ` *) pls gimme start time after /from.
+____________________________________________________________
+ oopsies !! (´ ∀ ` *) pls gimme end time after /to.
+____________________________________________________________
+  yippee glad to have helped (＠＾◡＾)
+  byebye !! have a good day (๑˃ᴗ˂)ﻭ
+____________________________________________________________
+```
+
+## UI-010: Reject invalid task numbers
+
+**Aim:** Verify that mark and unmark commands handle missing, non-numeric, and out-of-range task numbers without crashing.
+
+**Inputs:**
+
+```text
+mark
+mark one
+mark 1
+todo read book
+mark 2
+unmark 0
+bye
+```
+
+**Expected output:**
+
+```text
+ ____        _     
+| __ )  ___ | |__  
+|  _ \ / _ \| '_ \ 
+| |_) | (_) | |_) |
+|____/ \___/|_.__/ 
+
+hello im bob !!
+how can i help :)
+____________________________________________________________
+ oopsies !! (´ ∀ ` *) can't help if idk which task no
+____________________________________________________________
+ oopsies !! (´ ∀ ` *) enter a valid task no pls
+____________________________________________________________
+ oopsies !! (´ ∀ ` *) can't do anyth if there's no task
+____________________________________________________________
+ okays task added:
+   [T][ ] read book
+ you now have 1 tasks in the list, get to it !!
+____________________________________________________________
+ oopsies !! (´ ∀ ` *) task doesn't exist, whats your fav no from 1 to 1?
+____________________________________________________________
+ oopsies !! (´ ∀ ` *) task doesn't exist, whats your fav no from 1 to 1?
 ____________________________________________________________
   yippee glad to have helped (＠＾◡＾)
   byebye !! have a good day (๑˃ᴗ˂)ﻭ

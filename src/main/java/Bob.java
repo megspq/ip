@@ -23,8 +23,8 @@ public class Bob {
         System.out.println("how can i help :)");
         System.out.println(DIVIDER);
 
-        while (true) {
-            String input = scanner.nextLine();
+        while (scanner.hasNextLine()) {
+            String input = scanner.nextLine().trim();
 
             if (input.equals("bye")) {
                 System.out.println("  yippee glad to have helped (＠＾◡＾)");
@@ -33,53 +33,109 @@ public class Bob {
                 break;
             }
 
-            if (input.equals("list")) {
-                System.out.println(" here are your tasks (⌒‿⌒) 加油 !! :");
-                for (int i = 0; i < taskCount; i++) {
-                    System.out.println(" " + (i + 1) + "." + tasks[i]);
-                }
-            } else if (input.startsWith("mark ")) {
-                int taskIndex = Integer.parseInt(input.substring(5).trim()) - 1;
-                tasks[taskIndex].markAsDone();
-                System.out.println(" yippee task done, i've marked it as so:");
-                System.out.println("   " + tasks[taskIndex]);
-            } else if (input.startsWith("unmark ")) {
-                int taskIndex = Integer.parseInt(input.substring(7).trim()) - 1;
-                tasks[taskIndex].markAsNotDone();
-                System.out.println(" okie, i've marked this task incomplete:");
-                System.out.println("   " + tasks[taskIndex]);
-            } else if (input.startsWith("todo ")) {
-                String description = input.substring(5).trim();
-                taskCount = addTask(tasks, taskCount, new Todo(description));
-            } else if (input.startsWith("deadline ")) {
-                int byPosition = input.indexOf(" /by ");
-                if (byPosition == -1) {
-                    System.out.println(" please include /by followed by the deadline");
+            try {
+                if (input.equals("list")) {
+                    printTasks(tasks, taskCount);
+                } else if (input.equals("mark") || input.startsWith("mark ")) {
+                    int taskIndex = parseTaskIndex(input, "mark", taskCount);
+                    tasks[taskIndex].markAsDone();
+                    System.out.println(" yippee task done, i've marked it as so:");
+                    System.out.println("   " + tasks[taskIndex]);
+                } else if (input.equals("unmark") || input.startsWith("unmark ")) {
+                    int taskIndex = parseTaskIndex(input, "unmark", taskCount);
+                    tasks[taskIndex].markAsNotDone();
+                    System.out.println(" okie, i've marked this task incomplete:");
+                    System.out.println("   " + tasks[taskIndex]);
+                } else if (input.equals("todo") || input.startsWith("todo ")) {
+                    String description = input.substring(4).trim();
+                    requireNotEmpty(description, "oopsies a todo needs a desc, eg: todo sleep");
+                    taskCount = addTask(tasks, taskCount, new Todo(description));
+                } else if (input.equals("deadline") || input.startsWith("deadline ")) {
+                    taskCount = addDeadline(tasks, taskCount, input);
+                } else if (input.equals("event") || input.startsWith("event ")) {
+                    taskCount = addEvent(tasks, taskCount, input);
                 } else {
-                    String description = input.substring(9, byPosition).trim();
-                    String by = input.substring(byPosition + 5).trim();
-                    taskCount = addTask(tasks, taskCount, new Deadline(description, by));
+                    throw new BobException("pls try either one of list, todo, deadline, event, mark, unmark, or bye");
                 }
-            } else if (input.startsWith("event ")) {
-                int fromPosition = input.indexOf(" /from ");
-                int toPosition = input.indexOf(" /to ");
-                if (fromPosition == -1 || toPosition == -1 || toPosition < fromPosition) {
-                    System.out.println(" please include /from and /to for the event");
-                } else {
-                    String description = input.substring(6, fromPosition).trim();
-                    String from = input.substring(fromPosition + 7, toPosition).trim();
-                    String to = input.substring(toPosition + 5).trim();
-                    taskCount = addTask(tasks, taskCount, new Event(description, from, to));
-                }
-            } else {
-                System.out.println(" sorry what??");
+            } catch (BobException exception) {
+                System.out.println(" oopsies !! (´ ∀ ` *) " + exception.getMessage());
             }
             System.out.println(DIVIDER);
         }
         scanner.close();
     }
 
-    private static int addTask(Task[] tasks, int taskCount, Task task) {
+    private static void printTasks(Task[] tasks, int taskCount) {
+        System.out.println(" here are your tasks (⌒‿⌒) 加油 !! :");
+        for (int i = 0; i < taskCount; i++) {
+            System.out.println(" " + (i + 1) + "." + tasks[i]);
+        }
+    }
+
+    private static int parseTaskIndex(String input, String command, int taskCount) throws BobException {
+        String numberText = input.substring(command.length()).trim();
+        if (numberText.isEmpty()) {
+            throw new BobException("can't help if idk which task no");
+        }
+
+        final int taskNumber;
+        try {
+            taskNumber = Integer.parseInt(numberText);
+        } catch (NumberFormatException exception) {
+            throw new BobException("enter a valid task no pls");
+        }
+        if (taskCount == 0) {
+            throw new BobException("can't do anyth if there's no task");
+        }
+        if (taskNumber < 1 || taskNumber > taskCount) {
+            throw new BobException("task doesn't exist, whats your fav no from 1 to " + taskCount + "?");
+        }
+        return taskNumber - 1;
+    }
+
+    /**
+     * Validates and adds a deadline command's description and deadline.
+     */
+    private static int addDeadline(Task[] tasks, int taskCount, String input) throws BobException {
+        int byPosition = input.indexOf(" /by");
+        if (byPosition == -1) {
+            throw new BobException("a deadline needs /by and a date or time, eg play /by today");
+        }
+        String description = input.substring("deadline".length(), byPosition).trim();
+        String by = input.substring(byPosition + " /by".length()).trim();
+        requireNotEmpty(description, "pls give a desc before /by.");
+        requireNotEmpty(by, "pls give a date or time after /by.");
+        return addTask(tasks, taskCount, new Deadline(description, by));
+    }
+
+    /**
+     * Validates and adds an event command's description, start, and end.
+     */
+    private static int addEvent(Task[] tasks, int taskCount, String input) throws BobException {
+        int fromPosition = input.indexOf(" /from");
+        int toPosition = input.indexOf(" /to");
+        if (fromPosition == -1 || toPosition == -1 || toPosition < fromPosition) {
+            throw new BobException("an event needs /from and /to, eg event meeting /from 2pm /to 4pm");
+        }
+        String description = input.substring("event".length(), fromPosition).trim();
+        String from = input.substring(fromPosition + " /from".length(), toPosition).trim();
+        String to = input.substring(toPosition + " /to".length()).trim();
+        requireNotEmpty(description, "pls gimme event desc before /from.");
+        requireNotEmpty(from, "pls gimme start time after /from.");
+        requireNotEmpty(to, "pls gimme end time after /to.");
+        return addTask(tasks, taskCount, new Event(description, from, to));
+    }
+
+    private static void requireNotEmpty(String value, String message) throws BobException {
+        if (value.isEmpty()) {
+            throw new BobException(message);
+        }
+    }
+
+    private static int addTask(Task[] tasks, int taskCount, Task task) throws BobException {
+        if (taskCount >= tasks.length) {
+            throw new BobException("wowie so busy !! task list full, go finish your 100 things to do first.");
+        }
         tasks[taskCount] = task;
         int updatedCount = taskCount + 1;
         System.out.println(" okays task added:");
