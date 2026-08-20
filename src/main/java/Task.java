@@ -39,12 +39,21 @@ public class Task {
     }
 
     /**
+     * Returns the single-letter label used to identify this kind of task.
+     *
+     * @return the task type label
+     */
+    public String getTypeIcon() {
+        return "T";
+    }
+
+    /**
      * Returns this task in the format used by Bob's task list.
      *
      * @return the status icon followed by the task description
      */
     @Override
     public String toString() {
-        return "[" + getStatusIcon() + "] " + description;
+        return "[" + getTypeIcon() + "][" + getStatusIcon() + "] " + description;
     }
 }
