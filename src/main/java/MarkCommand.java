@@ -4,19 +4,20 @@ import java.io.IOException;
  * Represents a request to mark one task as complete.
  */
 public class MarkCommand extends Command {
-    private final int taskIndex;
+    private final int taskNumber;
 
     /**
-     * Creates a command for a zero-based task index.
+     * Creates a command for a one-based task number.
      *
-     * @param taskIndex index of the task to mark
+     * @param taskNumber number of the task to mark
      */
-    public MarkCommand(int taskIndex) {
-        this.taskIndex = taskIndex;
+    public MarkCommand(int taskNumber) {
+        this.taskNumber = taskNumber;
     }
 
     @Override
-    public void execute(TaskList tasks, Ui ui, Storage storage) throws IOException {
+    public void execute(TaskList tasks, Ui ui, Storage storage) throws BobException, IOException {
+        int taskIndex = tasks.getTaskIndex(taskNumber);
         Task task = tasks.get(taskIndex);
         boolean wasDone = task.isDone();
         tasks.mark(taskIndex);

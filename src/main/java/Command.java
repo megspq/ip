@@ -1,7 +1,7 @@
 import java.io.IOException;
 
 /**
- * Represents a validated user command.
+ * Represents a parsed user command.
  */
 public abstract class Command {
     /**
@@ -10,9 +10,10 @@ public abstract class Command {
      * @param tasks task list to query or change
      * @param ui user interface used for command feedback
      * @param storage storage used to persist changes
+     * @throws BobException if the command cannot be applied to the current task list
      * @throws IOException if a changed task list cannot be saved
      */
-    public abstract void execute(TaskList tasks, Ui ui, Storage storage) throws IOException;
+    public abstract void execute(TaskList tasks, Ui ui, Storage storage) throws BobException, IOException;
 
     /**
      * Returns whether this command should end the application.

@@ -33,7 +33,7 @@ public class Bob {
             String input = ui.readCommand();
 
             try {
-                Command command = Parser.parse(input, tasks.size());
+                Command command = Parser.parse(input);
                 command.execute(tasks, ui, storage);
                 isExit = command.isExit();
             } catch (BobException exception) {

@@ -4,19 +4,20 @@ import java.io.IOException;
  * Represents a request to delete one task.
  */
 public class DeleteCommand extends Command {
-    private final int taskIndex;
+    private final int taskNumber;
 
     /**
-     * Creates a command for a zero-based task index.
+     * Creates a command for a one-based task number.
      *
-     * @param taskIndex index of the task to delete
+     * @param taskNumber number of the task to delete
      */
-    public DeleteCommand(int taskIndex) {
-        this.taskIndex = taskIndex;
+    public DeleteCommand(int taskNumber) {
+        this.taskNumber = taskNumber;
     }
 
     @Override
-    public void execute(TaskList tasks, Ui ui, Storage storage) throws IOException {
+    public void execute(TaskList tasks, Ui ui, Storage storage) throws BobException, IOException {
+        int taskIndex = tasks.getTaskIndex(taskNumber);
         Task removedTask = tasks.delete(taskIndex);
         try {
             storage.save(tasks.asList());

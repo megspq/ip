@@ -43,6 +43,23 @@ public class TaskList {
     }
 
     /**
+     * Validates a one-based task number and converts it to a zero-based index.
+     *
+     * @param taskNumber one-based number entered by the user
+     * @return corresponding zero-based list index
+     * @throws BobException if the list is empty or the task number is out of range
+     */
+    public int getTaskIndex(int taskNumber) throws BobException {
+        if (tasks.isEmpty()) {
+            throw new BobException("can't do anyth if there's no task");
+        }
+        if (taskNumber < 1 || taskNumber > tasks.size()) {
+            throw new BobException("task doesn't exist, whats your fav no from 1 to " + tasks.size() + "?");
+        }
+        return taskNumber - 1;
+    }
+
+    /**
      * Adds a task to the end of the list.
      *
      * @param task task to add

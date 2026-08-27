@@ -17,24 +17,23 @@ public class Parser {
     }
 
     /**
-     * Parses one line of input, validating its arguments against the task count.
+     * Parses one line of input and validates its command syntax.
      *
      * @param input command entered by the user
-     * @param taskCount current number of tasks
      * @return command data ready for Bob to execute
      * @throws BobException if the command or any of its arguments is invalid
      */
-    public static Command parse(String input, int taskCount) throws BobException {
+    public static Command parse(String input) throws BobException {
         if (input.equals("bye")) {
             return new ExitCommand();
         } else if (input.equals("list")) {
             return new ListCommand();
         } else if (input.equals("mark") || input.startsWith("mark ")) {
-            return new MarkCommand(parseTaskIndex(input, "mark", taskCount));
+            return new MarkCommand(parseTaskNumber(input, "mark"));
         } else if (input.equals("unmark") || input.startsWith("unmark ")) {
-            return new UnmarkCommand(parseTaskIndex(input, "unmark", taskCount));
+            return new UnmarkCommand(parseTaskNumber(input, "unmark"));
         } else if (input.equals("delete") || input.startsWith("delete ")) {
-            return new DeleteCommand(parseTaskIndex(input, "delete", taskCount));
+            return new DeleteCommand(parseTaskNumber(input, "delete"));
         } else if (input.equals("todo") || input.startsWith("todo ")) {
             return new AddCommand(parseTodo(input));
         } else if (input.equals("deadline") || input.startsWith("deadline ")) {
@@ -45,7 +44,7 @@ public class Parser {
         throw new BobException("pls try either one of list, todo, deadline, event, mark, unmark, delete, or bye");
     }
 
-    private static int parseTaskIndex(String input, String command, int taskCount) throws BobException {
+    private static int parseTaskNumber(String input, String command) throws BobException {
         String numberText = input.substring(command.length()).trim();
         if (numberText.isEmpty()) {
             throw new BobException("can't help if idk which task no");
@@ -57,13 +56,7 @@ public class Parser {
         } catch (NumberFormatException exception) {
             throw new BobException("enter a valid task no pls");
         }
-        if (taskCount == 0) {
-            throw new BobException("can't do anyth if there's no task");
-        }
-        if (taskNumber < 1 || taskNumber > taskCount) {
-            throw new BobException("task doesn't exist, whats your fav no from 1 to " + taskCount + "?");
-        }
-        return taskNumber - 1;
+        return taskNumber;
     }
 
     private static Todo parseTodo(String input) throws BobException {
