@@ -83,21 +83,21 @@ public class Storage {
         }
 
         Task task = switch (fields[0]) {
-        case "T" -> {
-            requireFieldCount(fields, 3);
-            yield new Todo(requireText(fields[2]));
-        }
-        case "D" -> {
-            requireFieldCount(fields, 4);
-            yield new Deadline(requireText(fields[2]), LocalDate.parse(requireText(fields[3])));
-        }
-        case "E" -> {
-            requireFieldCount(fields, 5);
-            yield new Event(requireText(fields[2]),
-                    LocalDateTime.parse(requireText(fields[3]), EVENT_STORAGE_FORMAT),
-                    LocalDateTime.parse(requireText(fields[4]), EVENT_STORAGE_FORMAT));
-        }
-        default -> throw new IllegalArgumentException("Unknown task type: " + fields[0]);
+            case "T" -> {
+                requireFieldCount(fields, 3);
+                yield new Todo(requireText(fields[2]));
+            }
+            case "D" -> {
+                requireFieldCount(fields, 4);
+                yield new Deadline(requireText(fields[2]), LocalDate.parse(requireText(fields[3])));
+            }
+            case "E" -> {
+                requireFieldCount(fields, 5);
+                yield new Event(requireText(fields[2]),
+                        LocalDateTime.parse(requireText(fields[3]), EVENT_STORAGE_FORMAT),
+                        LocalDateTime.parse(requireText(fields[4]), EVENT_STORAGE_FORMAT));
+            }
+            default -> throw new IllegalArgumentException("Unknown task type: " + fields[0]);
         };
 
         if (fields[1].equals("1")) {

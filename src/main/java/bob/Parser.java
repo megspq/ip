@@ -55,7 +55,8 @@ public class Parser {
         } else if (input.equals("event") || input.startsWith("event ")) {
             return new AddCommand(parseEvent(input));
         }
-        throw new BobException("pls try either one of list, todo, deadline, event, mark, unmark, delete, or bye");
+        throw new BobException(
+                "pls try either one of list, todo, deadline, event, mark, unmark, delete, or bye");
     }
 
     /**
@@ -129,7 +130,8 @@ public class Parser {
         int fromPosition = input.indexOf(" /from");
         int toPosition = input.indexOf(" /to");
         if (fromPosition == -1 || toPosition == -1 || toPosition < fromPosition) {
-            throw new BobException("an event needs /from and /to, eg event meeting /from 2019-12-02 1400 /to 2019-12-02 1600");
+            throw new BobException(
+                    "an event needs /from and /to, eg event meeting /from 2019-12-02 1400 /to 2019-12-02 1600");
         }
         String description = input.substring("event".length(), fromPosition).trim();
         String from = input.substring(fromPosition + " /from".length(), toPosition).trim();
