@@ -7,6 +7,7 @@ import org.junit.jupiter.api.Test;
 
 import bob.command.AddCommand;
 import bob.command.ExitCommand;
+import bob.command.FindCommand;
 import bob.command.MarkCommand;
 
 class ParserTest {
@@ -18,6 +19,16 @@ class ParserTest {
     @Test
     void parse_validMarkCommand_returnsMarkCommand() throws BobException {
         assertInstanceOf(MarkCommand.class, Parser.parse("mark 2"));
+    }
+
+    @Test
+    void parse_validFindCommand_returnsFindCommand() throws BobException {
+        assertInstanceOf(FindCommand.class, Parser.parse("find book"));
+    }
+
+    @Test
+    void parse_findWithoutKeyword_throwsBobException() {
+        assertThrows(BobException.class, () -> Parser.parse("find"));
     }
 
     @Test

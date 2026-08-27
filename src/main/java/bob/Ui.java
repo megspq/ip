@@ -74,6 +74,18 @@ public class Ui {
     }
 
     /**
+     * Displays tasks whose descriptions match a search keyword.
+     *
+     * @param tasks matching tasks to display
+     */
+    public void showFoundTasks(List<Task> tasks) {
+        System.out.println(" here's what i found:");
+        for (int i = 0; i < tasks.size(); i++) {
+            System.out.println(" " + (i + 1) + "." + tasks.get(i));
+        }
+    }
+
+    /**
      * Displays confirmation that a task was marked complete.
      *
      * @param task task that was marked

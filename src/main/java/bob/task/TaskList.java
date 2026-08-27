@@ -110,6 +110,18 @@ public class TaskList {
     }
 
     /**
+     * Finds tasks whose descriptions contain the given keyword.
+     *
+     * @param keyword keyword to find
+     * @return matching tasks in their original order
+     */
+    public List<Task> find(String keyword) {
+        return tasks.stream()
+                .filter(task -> task.containsKeyword(keyword))
+                .toList();
+    }
+
+    /**
      * Restores a deleted task to its original position after a failed save.
      *
      * @param index original index of the task

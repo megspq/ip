@@ -448,7 +448,7 @@ bye
 hello im bob !!
 how can i help :)
 ____________________________________________________________
- oopsies !! (´ ∀ ` *) pls try either one of list, todo, deadline, event, mark, unmark, delete, or bye
+ oopsies !! (´ ∀ ` *) pls try either one of list, find, todo, deadline, event, mark, unmark, delete, or bye
 ____________________________________________________________
   yippee glad to have helped (＠＾◡＾)
   byebye !! have a good day (๑˃ᴗ˂)ﻭ
@@ -641,6 +641,57 @@ ____________________________________________________________
  oopsies !! (´ ∀ ` *) use yyyy-MM-dd HHmm for event dates and times, eg 2019-12-02 1800
 ____________________________________________________________
  oopsies !! (´ ∀ ` *) an event's end cannot be before its start
+____________________________________________________________
+  yippee glad to have helped (＠＾◡＾)
+  byebye !! have a good day (๑˃ᴗ˂)ﻭ
+____________________________________________________________
+```
+
+## UI-017: Find tasks by keyword
+
+**Aim:** Verify that `find` displays only tasks whose descriptions contain the keyword, in their original order.
+
+**Inputs:**
+
+```text
+todo read book
+deadline return book /by 2019-12-02
+todo buy pen
+mark 1
+find book
+bye
+```
+
+**Expected output:**
+
+```text
+ ____        _     
+| __ )  ___ | |__  
+|  _ \ / _ \| '_ \ 
+| |_) | (_) | |_) |
+|____/ \___/|_.__/ 
+
+hello im bob !!
+how can i help :)
+____________________________________________________________
+ okays task added:
+   [T][ ] read book
+ you now have 1 tasks in the list, get to it !!
+____________________________________________________________
+ okays task added:
+   [D][ ] return book (by: Dec 02 2019)
+ you now have 2 tasks in the list, get to it !!
+____________________________________________________________
+ okays task added:
+   [T][ ] buy pen
+ you now have 3 tasks in the list, get to it !!
+____________________________________________________________
+ yippee task done, i've marked it as so:
+   [T][X] read book
+____________________________________________________________
+ here's what i found:
+ 1.[T][X] read book
+ 2.[D][ ] return book (by: Dec 02 2019)
 ____________________________________________________________
   yippee glad to have helped (＠＾◡＾)
   byebye !! have a good day (๑˃ᴗ˂)ﻭ

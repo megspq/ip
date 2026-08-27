@@ -10,6 +10,7 @@ import bob.command.AddCommand;
 import bob.command.Command;
 import bob.command.DeleteCommand;
 import bob.command.ExitCommand;
+import bob.command.FindCommand;
 import bob.command.ListCommand;
 import bob.command.MarkCommand;
 import bob.command.UnmarkCommand;
@@ -42,6 +43,8 @@ public class Parser {
             return new ExitCommand();
         } else if (input.equals("list")) {
             return new ListCommand();
+        } else if (input.equals("find") || input.startsWith("find ")) {
+            return new FindCommand(parseKeyword(input));
         } else if (input.equals("mark") || input.startsWith("mark ")) {
             return new MarkCommand(parseTaskNumber(input, "mark"));
         } else if (input.equals("unmark") || input.startsWith("unmark ")) {
@@ -55,7 +58,14 @@ public class Parser {
         } else if (input.equals("event") || input.startsWith("event ")) {
             return new AddCommand(parseEvent(input));
         }
-        throw new BobException("pls try either one of list, todo, deadline, event, mark, unmark, delete, or bye");
+        throw new BobException(
+                "pls try either one of list, find, todo, deadline, event, mark, unmark, delete, or bye");
+    }
+
+    private static String parseKeyword(String input) throws BobException {
+        String keyword = input.substring("find".length()).trim();
+        requireNotEmpty(keyword, "pls give a keyword to find");
+        return keyword;
     }
 
     private static int parseTaskNumber(String input, String command) throws BobException {
@@ -99,7 +109,8 @@ public class Parser {
         int fromPosition = input.indexOf(" /from");
         int toPosition = input.indexOf(" /to");
         if (fromPosition == -1 || toPosition == -1 || toPosition < fromPosition) {
-            throw new BobException("an event needs /from and /to, eg event meeting /from 2019-12-02 1400 /to 2019-12-02 1600");
+            throw new BobException(
+                    "an event needs /from and /to, eg event meeting /from 2019-12-02 1400 /to 2019-12-02 1600");
         }
         String description = input.substring("event".length(), fromPosition).trim();
         String from = input.substring(fromPosition + " /from".length(), toPosition).trim();

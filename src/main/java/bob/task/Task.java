@@ -50,6 +50,16 @@ public class Task {
     }
 
     /**
+     * Returns whether this task's description contains the given keyword.
+     *
+     * @param keyword keyword to find
+     * @return {@code true} if the description contains the keyword
+     */
+    public boolean containsKeyword(String keyword) {
+        return description.contains(keyword);
+    }
+
+    /**
      * Returns the completion state in the compact form used for storage.
      *
      * @return {@code "1"} if done, or {@code "0"} otherwise
