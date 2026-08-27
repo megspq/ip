@@ -1,5 +1,9 @@
+package bob.task;
+
 import java.util.ArrayList;
 import java.util.List;
+
+import bob.BobException;
 
 /**
  * Owns Bob's task collection and provides operations for changing it.
@@ -111,7 +115,7 @@ public class TaskList {
      * @param index original index of the task
      * @param task task to restore
      */
-    void restoreDeletedTask(int index, Task task) {
+    public void restoreDeletedTask(int index, Task task) {
         tasks.add(index, task);
     }
 
@@ -121,7 +125,7 @@ public class TaskList {
      * @param index index of the task to restore
      * @param wasDone completion state before the attempted change
      */
-    void restoreDoneState(int index, boolean wasDone) {
+    public void restoreDoneState(int index, boolean wasDone) {
         if (wasDone) {
             mark(index);
         } else {

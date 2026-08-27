@@ -1,3 +1,5 @@
+package bob;
+
 /**
  * Indicates that saved task data could not be read or was not valid.
  */

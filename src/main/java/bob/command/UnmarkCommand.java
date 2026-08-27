@@ -1,4 +1,12 @@
+package bob.command;
+
 import java.io.IOException;
+
+import bob.BobException;
+import bob.Storage;
+import bob.Ui;
+import bob.task.Task;
+import bob.task.TaskList;
 
 /**
  * Represents a request to mark one task as incomplete.

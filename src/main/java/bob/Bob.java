@@ -1,5 +1,10 @@
+package bob;
+
 import java.io.IOException;
 import java.nio.file.Path;
+
+import bob.command.Command;
+import bob.task.TaskList;
 
 /**
  * Runs the Bob task-management chatbot.

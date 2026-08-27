@@ -1,4 +1,11 @@
+package bob.command;
+
 import java.io.IOException;
+
+import bob.BobException;
+import bob.Storage;
+import bob.Ui;
+import bob.task.TaskList;
 
 /**
  * Represents a parsed user command.

@@ -1,3 +1,5 @@
+package bob.task;
+
 /**
  * Represents a task that has no associated date or time.
  */
