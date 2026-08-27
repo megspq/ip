@@ -1,3 +1,5 @@
+package bob;
+
 /**
  * Indicates that a user command is invalid and contains a user-facing explanation.
  */
@@ -9,7 +11,7 @@ public class BobException extends Exception {
      *
      * @param message explanation to show the user
      */
-    BobException(String message) {
+    public BobException(String message) {
         super(message);
     }
 }

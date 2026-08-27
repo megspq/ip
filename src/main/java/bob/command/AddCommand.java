@@ -1,4 +1,11 @@
+package bob.command;
+
 import java.io.IOException;
+
+import bob.Storage;
+import bob.Ui;
+import bob.task.Task;
+import bob.task.TaskList;
 
 /**
  * Represents a request to add a task.
