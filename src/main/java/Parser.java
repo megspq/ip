@@ -17,55 +17,6 @@ public class Parser {
     }
 
     /**
-     * Identifies the action requested by a parsed command.
-     */
-    public enum CommandType {
-        BYE, LIST, MARK, UNMARK, DELETE, ADD
-    }
-
-    /**
-     * Holds the action and any task data produced while parsing a command.
-     */
-    public static class ParsedCommand {
-        private final CommandType type;
-        private final Task task;
-        private final int taskIndex;
-
-        private ParsedCommand(CommandType type, Task task, int taskIndex) {
-            this.type = type;
-            this.task = task;
-            this.taskIndex = taskIndex;
-        }
-
-        /**
-         * Returns the action requested by the user.
-         *
-         * @return parsed command type
-         */
-        public CommandType getType() {
-            return type;
-        }
-
-        /**
-         * Returns the task created by an add command.
-         *
-         * @return parsed task, or {@code null} for commands that do not add a task
-         */
-        public Task getTask() {
-            return task;
-        }
-
-        /**
-         * Returns the zero-based task index used by a task-selection command.
-         *
-         * @return parsed task index, or {@code -1} when the command does not select a task
-         */
-        public int getTaskIndex() {
-            return taskIndex;
-        }
-    }
-
-    /**
      * Parses one line of input, validating its arguments against the task count.
      *
      * @param input command entered by the user
@@ -73,30 +24,25 @@ public class Parser {
      * @return command data ready for Bob to execute
      * @throws BobException if the command or any of its arguments is invalid
      */
-    public static ParsedCommand parse(String input, int taskCount) throws BobException {
+    public static Command parse(String input, int taskCount) throws BobException {
         if (input.equals("bye")) {
-            return new ParsedCommand(CommandType.BYE, null, -1);
+            return new ExitCommand();
         } else if (input.equals("list")) {
-            return new ParsedCommand(CommandType.LIST, null, -1);
+            return new ListCommand();
         } else if (input.equals("mark") || input.startsWith("mark ")) {
-            return taskSelection(CommandType.MARK, input, "mark", taskCount);
+            return new MarkCommand(parseTaskIndex(input, "mark", taskCount));
         } else if (input.equals("unmark") || input.startsWith("unmark ")) {
-            return taskSelection(CommandType.UNMARK, input, "unmark", taskCount);
+            return new UnmarkCommand(parseTaskIndex(input, "unmark", taskCount));
         } else if (input.equals("delete") || input.startsWith("delete ")) {
-            return taskSelection(CommandType.DELETE, input, "delete", taskCount);
+            return new DeleteCommand(parseTaskIndex(input, "delete", taskCount));
         } else if (input.equals("todo") || input.startsWith("todo ")) {
-            return new ParsedCommand(CommandType.ADD, parseTodo(input), -1);
+            return new AddCommand(parseTodo(input));
         } else if (input.equals("deadline") || input.startsWith("deadline ")) {
-            return new ParsedCommand(CommandType.ADD, parseDeadline(input), -1);
+            return new AddCommand(parseDeadline(input));
         } else if (input.equals("event") || input.startsWith("event ")) {
-            return new ParsedCommand(CommandType.ADD, parseEvent(input), -1);
+            return new AddCommand(parseEvent(input));
         }
         throw new BobException("pls try either one of list, todo, deadline, event, mark, unmark, delete, or bye");
-    }
-
-    private static ParsedCommand taskSelection(CommandType type, String input,
-            String command, int taskCount) throws BobException {
-        return new ParsedCommand(type, null, parseTaskIndex(input, command, taskCount));
     }
 
     private static int parseTaskIndex(String input, String command, int taskCount) throws BobException {

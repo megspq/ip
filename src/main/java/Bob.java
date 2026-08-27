@@ -32,26 +32,26 @@ public class Bob {
             String input = ui.readCommand();
 
             try {
-                Parser.ParsedCommand command = Parser.parse(input, tasks.size());
-                if (command.getType() == Parser.CommandType.BYE) {
+                Command command = Parser.parse(input, tasks.size());
+                if (command.isExit()) {
                     ui.showGoodbye();
                     break;
-                } else if (command.getType() == Parser.CommandType.LIST) {
+                } else if (command instanceof ListCommand) {
                     ui.showTasks(tasks.asList());
-                } else if (command.getType() == Parser.CommandType.MARK) {
-                    int taskIndex = command.getTaskIndex();
+                } else if (command instanceof MarkCommand markCommand) {
+                    int taskIndex = markCommand.getTaskIndex();
                     setDone(taskIndex, true);
                     ui.showMarked(tasks.get(taskIndex));
-                } else if (command.getType() == Parser.CommandType.UNMARK) {
-                    int taskIndex = command.getTaskIndex();
+                } else if (command instanceof UnmarkCommand unmarkCommand) {
+                    int taskIndex = unmarkCommand.getTaskIndex();
                     setDone(taskIndex, false);
                     ui.showUnmarked(tasks.get(taskIndex));
-                } else if (command.getType() == Parser.CommandType.DELETE) {
-                    int taskIndex = command.getTaskIndex();
+                } else if (command instanceof DeleteCommand deleteCommand) {
+                    int taskIndex = deleteCommand.getTaskIndex();
                     Task removedTask = deleteTask(taskIndex);
                     ui.showDeleted(removedTask, tasks.size());
-                } else if (command.getType() == Parser.CommandType.ADD) {
-                    addTask(command.getTask());
+                } else if (command instanceof AddCommand addCommand) {
+                    addTask(addCommand.getTask());
                 }
             } catch (BobException exception) {
                 ui.showError(exception.getMessage());
