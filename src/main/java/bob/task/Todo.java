@@ -13,11 +13,21 @@ public class Todo extends Task {
         super(description);
     }
 
+    /**
+     * Serializes this to-do with its task type.
+     *
+     * @return one to-do record suitable for storage
+     */
     @Override
     public String toStorageString() {
         return "T | " + super.toStorageString();
     }
 
+    /**
+     * Formats this to-do for display with its task type.
+     *
+     * @return display form of this to-do
+     */
     @Override
     public String toString() {
         return "[T]" + super.toString();

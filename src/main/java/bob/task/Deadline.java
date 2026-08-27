@@ -22,11 +22,21 @@ public class Deadline extends Task {
         this.by = by;
     }
 
+    /**
+     * Serializes this deadline with its task type and due date.
+     *
+     * @return one deadline record suitable for storage
+     */
     @Override
     public String toStorageString() {
         return "D | " + super.toStorageString() + " | " + by;
     }
 
+    /**
+     * Formats this deadline for display with a friendly due date.
+     *
+     * @return display form of this deadline
+     */
     @Override
     public String toString() {
         return "[D]" + super.toString() + " (by: " + by.format(DISPLAY_FORMAT) + ")";

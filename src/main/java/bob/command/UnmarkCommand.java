@@ -23,6 +23,15 @@ public class UnmarkCommand extends Command {
         this.taskNumber = taskNumber;
     }
 
+    /**
+     * Unmarks and saves the selected task, restoring its state if saving fails.
+     *
+     * @param tasks task list to update
+     * @param ui user interface used for confirmation
+     * @param storage storage used to persist the updated list
+     * @throws BobException if the task number is outside the list
+     * @throws IOException if the updated task list cannot be saved
+     */
     @Override
     public void execute(TaskList tasks, Ui ui, Storage storage) throws BobException, IOException {
         int taskIndex = tasks.getTaskIndex(taskNumber);

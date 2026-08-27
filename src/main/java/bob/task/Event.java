@@ -27,12 +27,22 @@ public class Event extends Task {
         this.to = to;
     }
 
+    /**
+     * Serializes this event with its task type, start, and end time.
+     *
+     * @return one event record suitable for storage
+     */
     @Override
     public String toStorageString() {
         return "E | " + super.toStorageString() + " | "
                 + from.format(STORAGE_FORMAT) + " | " + to.format(STORAGE_FORMAT);
     }
 
+    /**
+     * Formats this event for display with friendly start and end times.
+     *
+     * @return display form of this event
+     */
     @Override
     public String toString() {
         return "[E]" + super.toString() + " (from: " + from.format(DISPLAY_FORMAT)

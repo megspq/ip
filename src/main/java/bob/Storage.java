@@ -70,6 +70,10 @@ public class Storage {
 
     /**
      * Reconstructs one task from its pipe-delimited storage fields.
+     *
+     * @param line stored task record
+     * @return task reconstructed from the record
+     * @throws IllegalArgumentException if the record is malformed
      */
     private Task parseTask(String line) {
         List<String> fieldList = splitFields(line);
@@ -104,6 +108,10 @@ public class Storage {
 
     /**
      * Splits a record while decoding escaped pipes and backslashes.
+     *
+     * @param line stored task record
+     * @return decoded fields in their original order
+     * @throws IllegalArgumentException if an escape sequence is invalid
      */
     private List<String> splitFields(String line) {
         List<String> fields = new ArrayList<>();
@@ -133,12 +141,26 @@ public class Storage {
         return fields;
     }
 
+    /**
+     * Validates that a stored task record contains the required number of fields.
+     *
+     * @param fields fields in the stored task record
+     * @param expectedCount required field count
+     * @throws IllegalArgumentException if the field count differs
+     */
     private void requireFieldCount(String[] fields, int expectedCount) {
         if (fields.length != expectedCount) {
             throw new IllegalArgumentException("Wrong number of fields");
         }
     }
 
+    /**
+     * Validates that a required stored field contains non-whitespace text.
+     *
+     * @param value stored field value
+     * @return the validated value
+     * @throws IllegalArgumentException if the value is blank
+     */
     private String requireText(String value) {
         if (value.isBlank()) {
             throw new IllegalArgumentException("Task fields cannot be empty");

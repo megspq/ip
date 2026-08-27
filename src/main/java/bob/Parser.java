@@ -58,6 +58,14 @@ public class Parser {
         throw new BobException("pls try either one of list, todo, deadline, event, mark, unmark, delete, or bye");
     }
 
+    /**
+     * Extracts and validates the one-based task number following a command word.
+     *
+     * @param input complete user input
+     * @param command command word preceding the number
+     * @return parsed one-based task number
+     * @throws BobException if the number is missing or is not an integer
+     */
     private static int parseTaskNumber(String input, String command) throws BobException {
         String numberText = input.substring(command.length()).trim();
         if (numberText.isEmpty()) {
@@ -73,12 +81,26 @@ public class Parser {
         return taskNumber;
     }
 
+    /**
+     * Parses a to-do command and requires a non-empty description.
+     *
+     * @param input complete user input
+     * @return to-do task described by the input
+     * @throws BobException if the description is empty
+     */
     private static Todo parseTodo(String input) throws BobException {
         String description = input.substring("todo".length()).trim();
         requireNotEmpty(description, "oopsies a todo needs a desc, eg: todo sleep");
         return new Todo(description);
     }
 
+    /**
+     * Parses a deadline command containing a description and ISO date.
+     *
+     * @param input complete user input
+     * @return deadline task described by the input
+     * @throws BobException if required fields are missing or the date is invalid
+     */
     private static Deadline parseDeadline(String input) throws BobException {
         int byPosition = input.indexOf(" /by");
         if (byPosition == -1) {
@@ -95,6 +117,14 @@ public class Parser {
         }
     }
 
+    /**
+     * Parses an event command containing a description, start, and end time.
+     *
+     * @param input complete user input
+     * @return event task described by the input
+     * @throws BobException if required fields are missing, a date-time is invalid,
+     *         or the event ends before it starts
+     */
     private static Event parseEvent(String input) throws BobException {
         int fromPosition = input.indexOf(" /from");
         int toPosition = input.indexOf(" /to");
@@ -119,6 +149,13 @@ public class Parser {
         }
     }
 
+    /**
+     * Rejects an empty required command field with the supplied user-facing message.
+     *
+     * @param value field value to validate
+     * @param message message to use when validation fails
+     * @throws BobException if {@code value} is empty
+     */
     private static void requireNotEmpty(String value, String message) throws BobException {
         if (value.isEmpty()) {
             throw new BobException(message);
