@@ -137,8 +137,10 @@ public class Storage {
      * @throws IOException if the directory or file cannot be written
      */
     public void save(List<Task> tasks) throws IOException {
-        Path absoluteFilePath = filePath.toAbsolutePath();
-        Path parent = absoluteFilePath.getParent();
+        Path parent = filePath.getParent();
+        if (parent == null) {
+            parent = Path.of(".");
+        }
         Files.createDirectories(parent);
         List<String> lines = tasks.stream()
                 .map(Task::toStorageString)
@@ -147,10 +149,10 @@ public class Storage {
         try {
             Files.write(temporaryFile, lines);
             try {
-                Files.move(temporaryFile, absoluteFilePath, StandardCopyOption.REPLACE_EXISTING,
+                Files.move(temporaryFile, filePath, StandardCopyOption.REPLACE_EXISTING,
                         StandardCopyOption.ATOMIC_MOVE);
             } catch (java.nio.file.AtomicMoveNotSupportedException exception) {
-                Files.move(temporaryFile, absoluteFilePath, StandardCopyOption.REPLACE_EXISTING);
+                Files.move(temporaryFile, filePath, StandardCopyOption.REPLACE_EXISTING);
             }
         } finally {
             Files.deleteIfExists(temporaryFile);
