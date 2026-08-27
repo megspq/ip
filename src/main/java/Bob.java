@@ -1,122 +1,96 @@
 import java.io.IOException;
 import java.nio.file.Path;
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
-import java.time.format.DateTimeParseException;
-import java.time.format.ResolverStyle;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Scanner;
 
 /**
  * Runs the Bob task-management chatbot.
  */
 public class Bob {
-    private static final String DIVIDER = "____________________________________________________________";
-    private static final Storage STORAGE = new Storage(Path.of("data", "bob.txt"));
-    private static final DateTimeFormatter EVENT_INPUT_FORMAT = DateTimeFormatter
-            .ofPattern("uuuu-MM-dd HHmm")
-            .withResolverStyle(ResolverStyle.STRICT);
+    private final Storage storage;
+    private final Ui ui;
+    private TaskList tasks;
 
-    public static void main(String[] args) {
-        Scanner scanner = new Scanner(System.in);
+    /**
+     * Creates a Bob application that saves tasks at the given file path.
+     *
+     * @param filePath location of the task data file
+     */
+    public Bob(String filePath) {
+        this.storage = new Storage(Path.of(filePath));
+        this.ui = new Ui();
+        this.tasks = new TaskList();
+    }
 
-        String banner = " ____        _     \n"
-                + "| __ )  ___ | |__  \n"
-                + "|  _ \\ / _ \\| '_ \\ \n"
-                + "| |_) | (_) | |_) |\n"
-                + "|____/ \\___/|_.__/ \n";
+    /**
+     * Starts Bob's command-reading loop and runs until the user exits or input ends.
+     */
+    public void run() {
+        ui.showWelcome();
 
-        System.out.println(banner);
-        System.out.println("hello im bob !!");
-        System.out.println("how can i help :)");
-        System.out.println(DIVIDER);
+        tasks = loadTasks();
 
-        List<Task> tasks = loadTasks();
-
-        while (scanner.hasNextLine()) {
-            String input = scanner.nextLine().trim();
-
-            if (input.equals("bye")) {
-                System.out.println("  yippee glad to have helped (＠＾◡＾)");
-                System.out.println("  byebye !! have a good day (๑˃ᴗ˂)ﻭ");
-                System.out.println(DIVIDER);
-                break;
-            }
+        while (ui.hasNextCommand()) {
+            String input = ui.readCommand();
 
             try {
-                if (input.equals("list")) {
-                    printTasks(tasks);
-                } else if (input.equals("mark") || input.startsWith("mark ")) {
-                    int taskIndex = parseTaskIndex(input, "mark", tasks.size());
-                    setDone(tasks, taskIndex, true);
-                    System.out.println(" yippee task done, i've marked it as so:");
-                    System.out.println("   " + tasks.get(taskIndex));
-                } else if (input.equals("unmark") || input.startsWith("unmark ")) {
-                    int taskIndex = parseTaskIndex(input, "unmark", tasks.size());
-                    setDone(tasks, taskIndex, false);
-                    System.out.println(" okie, i've marked this task incomplete:");
-                    System.out.println("   " + tasks.get(taskIndex));
-                } else if (input.equals("delete") || input.startsWith("delete ")) {
-                    int taskIndex = parseTaskIndex(input, "delete", tasks.size());
-                    Task removedTask = deleteTask(tasks, taskIndex);
-                    System.out.println(" okays here's the task i deleted: ");
-                    System.out.println("   " + removedTask);
-                    System.out.println(" pls get to the remaining " + tasks.size() + " tasks in your list");
-                } else if (input.equals("todo") || input.startsWith("todo ")) {
-                    String description = input.substring(4).trim();
-                    requireNotEmpty(description, "oopsies a todo needs a desc, eg: todo sleep");
-                    addTask(tasks, new Todo(description));
-                } else if (input.equals("deadline") || input.startsWith("deadline ")) {
-                    addDeadline(tasks, input);
-                } else if (input.equals("event") || input.startsWith("event ")) {
-                    addEvent(tasks, input);
-                } else {
-                    throw new BobException("pls try either one of list, todo, deadline, event, mark, unmark, delete, or bye");
+                Parser.ParsedCommand command = Parser.parse(input, tasks.size());
+                if (command.getType() == Parser.CommandType.BYE) {
+                    ui.showGoodbye();
+                    break;
+                } else if (command.getType() == Parser.CommandType.LIST) {
+                    ui.showTasks(tasks.asList());
+                } else if (command.getType() == Parser.CommandType.MARK) {
+                    int taskIndex = command.getTaskIndex();
+                    setDone(taskIndex, true);
+                    ui.showMarked(tasks.get(taskIndex));
+                } else if (command.getType() == Parser.CommandType.UNMARK) {
+                    int taskIndex = command.getTaskIndex();
+                    setDone(taskIndex, false);
+                    ui.showUnmarked(tasks.get(taskIndex));
+                } else if (command.getType() == Parser.CommandType.DELETE) {
+                    int taskIndex = command.getTaskIndex();
+                    Task removedTask = deleteTask(taskIndex);
+                    ui.showDeleted(removedTask, tasks.size());
+                } else if (command.getType() == Parser.CommandType.ADD) {
+                    addTask(command.getTask());
                 }
             } catch (BobException exception) {
-                System.out.println(" oopsies !! (´ ∀ ` *) " + exception.getMessage());
+                ui.showError(exception.getMessage());
             } catch (IOException exception) {
-                System.out.println(" oopsies !! (´ ∀ ` *) couldn't save your tasks; nothing was changed");
+                ui.showError("couldn't save your tasks; nothing was changed");
             }
-            System.out.println(DIVIDER);
+            ui.showDivider();
         }
-        scanner.close();
+        ui.close();
     }
 
     /**
      * Loads saved tasks, falling back to an empty list if the data cannot be used.
      */
-    private static List<Task> loadTasks() {
+    private TaskList loadTasks() {
         try {
-            return STORAGE.load();
+            return new TaskList(storage.load());
         } catch (StorageException exception) {
-            System.out.println(" oopsies !! (´ ∀ ` *) couldn't load saved tasks: " + exception.getMessage());
-            System.out.println(DIVIDER);
-            return new ArrayList<>();
+            ui.showError("couldn't load saved tasks: " + exception.getMessage());
+            ui.showDivider();
+            return new TaskList();
         }
     }
 
     /**
      * Changes a task's status and restores it if saving fails.
      */
-    private static void setDone(List<Task> tasks, int taskIndex, boolean isDone) throws IOException {
+    private void setDone(int taskIndex, boolean isDone) throws IOException {
         Task task = tasks.get(taskIndex);
         boolean wasDone = task.isDone();
         if (isDone) {
-            task.markAsDone();
+            tasks.mark(taskIndex);
         } else {
-            task.markAsNotDone();
+            tasks.unmark(taskIndex);
         }
         try {
-            STORAGE.save(tasks);
+            storage.save(tasks.asList());
         } catch (IOException exception) {
-            if (wasDone) {
-                task.markAsDone();
-            } else {
-                task.markAsNotDone();
-            }
+            tasks.restoreDoneState(taskIndex, wasDone);
             throw exception;
         }
     }
@@ -124,107 +98,34 @@ public class Bob {
     /**
      * Deletes a task and restores its position if saving fails.
      */
-    private static Task deleteTask(List<Task> tasks, int taskIndex) throws IOException {
-        Task removedTask = tasks.remove(taskIndex);
+    private Task deleteTask(int taskIndex) throws IOException {
+        Task removedTask = tasks.delete(taskIndex);
         try {
-            STORAGE.save(tasks);
+            storage.save(tasks.asList());
             return removedTask;
         } catch (IOException exception) {
-            tasks.add(taskIndex, removedTask);
+            tasks.restoreDeletedTask(taskIndex, removedTask);
             throw exception;
         }
     }
 
-    private static void printTasks(List<Task> tasks) {
-        System.out.println(" here are your tasks (⌒‿⌒) 加油 !! :");
-        for (int i = 0; i < tasks.size(); i++) {
-            System.out.println(" " + (i + 1) + "." + tasks.get(i));
-        }
-    }
-
-    private static int parseTaskIndex(String input, String command, int taskCount) throws BobException {
-        String numberText = input.substring(command.length()).trim();
-        if (numberText.isEmpty()) {
-            throw new BobException("can't help if idk which task no");
-        }
-
-        final int taskNumber;
-        try {
-            taskNumber = Integer.parseInt(numberText);
-        } catch (NumberFormatException exception) {
-            throw new BobException("enter a valid task no pls");
-        }
-        if (taskCount == 0) {
-            throw new BobException("can't do anyth if there's no task");
-        }
-        if (taskNumber < 1 || taskNumber > taskCount) {
-            throw new BobException("task doesn't exist, whats your fav no from 1 to " + taskCount + "?");
-        }
-        return taskNumber - 1;
-    }
-
-    /**
-     * Validates and adds a deadline command's description and deadline.
-     */
-    private static void addDeadline(List<Task> tasks, String input) throws BobException, IOException {
-        int byPosition = input.indexOf(" /by");
-        if (byPosition == -1) {
-            throw new BobException("a deadline needs /by and a date, eg play /by 2019-12-02");
-        }
-        String description = input.substring("deadline".length(), byPosition).trim();
-        String by = input.substring(byPosition + " /by".length()).trim();
-        requireNotEmpty(description, "pls give a desc before /by.");
-        requireNotEmpty(by, "pls give a date after /by.");
-        try {
-            addTask(tasks, new Deadline(description, LocalDate.parse(by)));
-        } catch (DateTimeParseException exception) {
-            throw new BobException("use yyyy-MM-dd for deadline dates, eg 2019-12-02");
-        }
-    }
-
-    /**
-     * Validates and adds an event command's description, start, and end.
-     */
-    private static void addEvent(List<Task> tasks, String input) throws BobException, IOException {
-        int fromPosition = input.indexOf(" /from");
-        int toPosition = input.indexOf(" /to");
-        if (fromPosition == -1 || toPosition == -1 || toPosition < fromPosition) {
-            throw new BobException("an event needs /from and /to, eg event meeting /from 2019-12-02 1400 /to 2019-12-02 1600");
-        }
-        String description = input.substring("event".length(), fromPosition).trim();
-        String from = input.substring(fromPosition + " /from".length(), toPosition).trim();
-        String to = input.substring(toPosition + " /to".length()).trim();
-        requireNotEmpty(description, "pls gimme event desc before /from.");
-        requireNotEmpty(from, "pls gimme start time after /from.");
-        requireNotEmpty(to, "pls gimme end time after /to.");
-        try {
-            LocalDateTime start = LocalDateTime.parse(from, EVENT_INPUT_FORMAT);
-            LocalDateTime end = LocalDateTime.parse(to, EVENT_INPUT_FORMAT);
-            if (end.isBefore(start)) {
-                throw new BobException("an event's end cannot be before its start");
-            }
-            addTask(tasks, new Event(description, start, end));
-        } catch (DateTimeParseException exception) {
-            throw new BobException("use yyyy-MM-dd HHmm for event dates and times, eg 2019-12-02 1800");
-        }
-    }
-
-    private static void requireNotEmpty(String value, String message) throws BobException {
-        if (value.isEmpty()) {
-            throw new BobException(message);
-        }
-    }
-
-    private static void addTask(List<Task> tasks, Task task) throws IOException {
+    private void addTask(Task task) throws IOException {
         tasks.add(task);
         try {
-            STORAGE.save(tasks);
+            storage.save(tasks.asList());
         } catch (IOException exception) {
-            tasks.remove(tasks.size() - 1);
+            tasks.delete(tasks.size() - 1);
             throw exception;
         }
-        System.out.println(" okays task added:");
-        System.out.println("   " + task);
-        System.out.println(" you now have " + tasks.size() + " tasks in the list, get to it !!");
+        ui.showAdded(task, tasks.size());
+    }
+
+    /**
+     * Starts Bob using the default task data file.
+     *
+     * @param args command-line arguments, which Bob does not use
+     */
+    public static void main(String[] args) {
+        new Bob("data/bob.txt").run();
     }
 }
