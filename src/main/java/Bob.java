@@ -7,63 +7,45 @@ import java.time.format.DateTimeParseException;
 import java.time.format.ResolverStyle;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Scanner;
 
 /**
  * Runs the Bob task-management chatbot.
  */
 public class Bob {
-    private static final String DIVIDER = "____________________________________________________________";
     private static final Storage STORAGE = new Storage(Path.of("data", "bob.txt"));
+    private static final Ui UI = new Ui();
     private static final DateTimeFormatter EVENT_INPUT_FORMAT = DateTimeFormatter
             .ofPattern("uuuu-MM-dd HHmm")
             .withResolverStyle(ResolverStyle.STRICT);
 
     public static void main(String[] args) {
-        Scanner scanner = new Scanner(System.in);
-
-        String banner = " ____        _     \n"
-                + "| __ )  ___ | |__  \n"
-                + "|  _ \\ / _ \\| '_ \\ \n"
-                + "| |_) | (_) | |_) |\n"
-                + "|____/ \\___/|_.__/ \n";
-
-        System.out.println(banner);
-        System.out.println("hello im bob !!");
-        System.out.println("how can i help :)");
-        System.out.println(DIVIDER);
+        UI.showWelcome();
 
         List<Task> tasks = loadTasks();
 
-        while (scanner.hasNextLine()) {
-            String input = scanner.nextLine().trim();
+        while (UI.hasNextCommand()) {
+            String input = UI.readCommand();
 
             if (input.equals("bye")) {
-                System.out.println("  yippee glad to have helped (＠＾◡＾)");
-                System.out.println("  byebye !! have a good day (๑˃ᴗ˂)ﻭ");
-                System.out.println(DIVIDER);
+                UI.showGoodbye();
                 break;
             }
 
             try {
                 if (input.equals("list")) {
-                    printTasks(tasks);
+                    UI.showTasks(tasks);
                 } else if (input.equals("mark") || input.startsWith("mark ")) {
                     int taskIndex = parseTaskIndex(input, "mark", tasks.size());
                     setDone(tasks, taskIndex, true);
-                    System.out.println(" yippee task done, i've marked it as so:");
-                    System.out.println("   " + tasks.get(taskIndex));
+                    UI.showMarked(tasks.get(taskIndex));
                 } else if (input.equals("unmark") || input.startsWith("unmark ")) {
                     int taskIndex = parseTaskIndex(input, "unmark", tasks.size());
                     setDone(tasks, taskIndex, false);
-                    System.out.println(" okie, i've marked this task incomplete:");
-                    System.out.println("   " + tasks.get(taskIndex));
+                    UI.showUnmarked(tasks.get(taskIndex));
                 } else if (input.equals("delete") || input.startsWith("delete ")) {
                     int taskIndex = parseTaskIndex(input, "delete", tasks.size());
                     Task removedTask = deleteTask(tasks, taskIndex);
-                    System.out.println(" okays here's the task i deleted: ");
-                    System.out.println("   " + removedTask);
-                    System.out.println(" pls get to the remaining " + tasks.size() + " tasks in your list");
+                    UI.showDeleted(removedTask, tasks.size());
                 } else if (input.equals("todo") || input.startsWith("todo ")) {
                     String description = input.substring(4).trim();
                     requireNotEmpty(description, "oopsies a todo needs a desc, eg: todo sleep");
@@ -76,13 +58,13 @@ public class Bob {
                     throw new BobException("pls try either one of list, todo, deadline, event, mark, unmark, delete, or bye");
                 }
             } catch (BobException exception) {
-                System.out.println(" oopsies !! (´ ∀ ` *) " + exception.getMessage());
+                UI.showError(exception.getMessage());
             } catch (IOException exception) {
-                System.out.println(" oopsies !! (´ ∀ ` *) couldn't save your tasks; nothing was changed");
+                UI.showError("couldn't save your tasks; nothing was changed");
             }
-            System.out.println(DIVIDER);
+            UI.showDivider();
         }
-        scanner.close();
+        UI.close();
     }
 
     /**
@@ -92,8 +74,8 @@ public class Bob {
         try {
             return STORAGE.load();
         } catch (StorageException exception) {
-            System.out.println(" oopsies !! (´ ∀ ` *) couldn't load saved tasks: " + exception.getMessage());
-            System.out.println(DIVIDER);
+            UI.showError("couldn't load saved tasks: " + exception.getMessage());
+            UI.showDivider();
             return new ArrayList<>();
         }
     }
@@ -132,13 +114,6 @@ public class Bob {
         } catch (IOException exception) {
             tasks.add(taskIndex, removedTask);
             throw exception;
-        }
-    }
-
-    private static void printTasks(List<Task> tasks) {
-        System.out.println(" here are your tasks (⌒‿⌒) 加油 !! :");
-        for (int i = 0; i < tasks.size(); i++) {
-            System.out.println(" " + (i + 1) + "." + tasks.get(i));
         }
     }
 
@@ -223,8 +198,6 @@ public class Bob {
             tasks.remove(tasks.size() - 1);
             throw exception;
         }
-        System.out.println(" okays task added:");
-        System.out.println("   " + task);
-        System.out.println(" you now have " + tasks.size() + " tasks in the list, get to it !!");
+        UI.showAdded(task, tasks.size());
     }
 }
