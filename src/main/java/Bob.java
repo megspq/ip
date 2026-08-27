@@ -1,4 +1,5 @@
-import java.util.ArrayList;
+import java.io.IOException;
+import java.nio.file.Path;
 import java.util.List;
 import java.util.Scanner;
 
@@ -7,10 +8,11 @@ import java.util.Scanner;
  */
 public class Bob {
     private static final String DIVIDER = "____________________________________________________________";
+    private static final Storage STORAGE = new Storage(Path.of("data", "bob.txt"));
 
-    public static void main(String[] args) {
+    public static void main(String[] args) throws IOException {
         Scanner scanner = new Scanner(System.in);
-        List<Task> tasks = new ArrayList<>();
+        List<Task> tasks = STORAGE.load();
 
         String banner = " ____        _     \n"
                 + "| __ )  ___ | |__  \n"
@@ -39,16 +41,19 @@ public class Bob {
                 } else if (input.equals("mark") || input.startsWith("mark ")) {
                     int taskIndex = parseTaskIndex(input, "mark", tasks.size());
                     tasks.get(taskIndex).markAsDone();
+                    STORAGE.save(tasks);
                     System.out.println(" yippee task done, i've marked it as so:");
                     System.out.println("   " + tasks.get(taskIndex));
                 } else if (input.equals("unmark") || input.startsWith("unmark ")) {
                     int taskIndex = parseTaskIndex(input, "unmark", tasks.size());
                     tasks.get(taskIndex).markAsNotDone();
+                    STORAGE.save(tasks);
                     System.out.println(" okie, i've marked this task incomplete:");
                     System.out.println("   " + tasks.get(taskIndex));
                 } else if (input.equals("delete") || input.startsWith("delete ")) {
                     int taskIndex = parseTaskIndex(input, "delete", tasks.size());
                     Task removedTask = tasks.remove(taskIndex);
+                    STORAGE.save(tasks);
                     System.out.println(" okays here's the task i deleted: ");
                     System.out.println("   " + removedTask);
                     System.out.println(" pls get to the remaining " + tasks.size() + " tasks in your list");
@@ -102,7 +107,7 @@ public class Bob {
     /**
      * Validates and adds a deadline command's description and deadline.
      */
-    private static void addDeadline(List<Task> tasks, String input) throws BobException {
+    private static void addDeadline(List<Task> tasks, String input) throws BobException, IOException {
         int byPosition = input.indexOf(" /by");
         if (byPosition == -1) {
             throw new BobException("a deadline needs /by and a date or time, eg play /by today");
@@ -117,7 +122,7 @@ public class Bob {
     /**
      * Validates and adds an event command's description, start, and end.
      */
-    private static void addEvent(List<Task> tasks, String input) throws BobException {
+    private static void addEvent(List<Task> tasks, String input) throws BobException, IOException {
         int fromPosition = input.indexOf(" /from");
         int toPosition = input.indexOf(" /to");
         if (fromPosition == -1 || toPosition == -1 || toPosition < fromPosition) {
@@ -138,8 +143,9 @@ public class Bob {
         }
     }
 
-    private static void addTask(List<Task> tasks, Task task) {
+    private static void addTask(List<Task> tasks, Task task) throws IOException {
         tasks.add(task);
+        STORAGE.save(tasks);
         System.out.println(" okays task added:");
         System.out.println("   " + task);
         System.out.println(" you now have " + tasks.size() + " tasks in the list, get to it !!");

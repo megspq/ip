@@ -39,6 +39,25 @@ public class Task {
     }
 
     /**
+     * Returns the completion state in the compact form used for storage.
+     *
+     * @return {@code "1"} if done, or {@code "0"} otherwise
+     */
+    protected String getStorageStatus() {
+        return isDone ? "1" : "0";
+    }
+
+    /**
+     * Returns this task in the application's storage format.
+     * Subclasses include their task type and any additional fields.
+     *
+     * @return one line suitable for writing to the task data file
+     */
+    public String toStorageString() {
+        return getStorageStatus() + " | " + description;
+    }
+
+    /**
      * Returns this task in the format used by Bob's task list.
      *
      * @return the status icon followed by the task description
