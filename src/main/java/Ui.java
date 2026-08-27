@@ -55,7 +55,6 @@ public class Ui {
     public void showGoodbye() {
         System.out.println("  yippee glad to have helped (＠＾◡＾)");
         System.out.println("  byebye !! have a good day (๑˃ᴗ˂)ﻭ");
-        showDivider();
     }
 
     /**

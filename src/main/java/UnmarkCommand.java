@@ -1,3 +1,5 @@
+import java.io.IOException;
+
 /**
  * Represents a request to mark one task as incomplete.
  */
@@ -13,12 +15,17 @@ public class UnmarkCommand extends Command {
         this.taskIndex = taskIndex;
     }
 
-    /**
-     * Returns the zero-based task index.
-     *
-     * @return index of the task to unmark
-     */
-    public int getTaskIndex() {
-        return taskIndex;
+    @Override
+    public void execute(TaskList tasks, Ui ui, Storage storage) throws IOException {
+        Task task = tasks.get(taskIndex);
+        boolean wasDone = task.isDone();
+        tasks.unmark(taskIndex);
+        try {
+            storage.save(tasks.asList());
+        } catch (IOException exception) {
+            tasks.restoreDoneState(taskIndex, wasDone);
+            throw exception;
+        }
+        ui.showUnmarked(task);
     }
 }

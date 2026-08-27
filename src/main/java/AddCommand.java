@@ -1,3 +1,5 @@
+import java.io.IOException;
+
 /**
  * Represents a request to add a task.
  */
@@ -13,12 +15,15 @@ public class AddCommand extends Command {
         this.task = task;
     }
 
-    /**
-     * Returns the task to add.
-     *
-     * @return task created from the user's input
-     */
-    public Task getTask() {
-        return task;
+    @Override
+    public void execute(TaskList tasks, Ui ui, Storage storage) throws IOException {
+        tasks.add(task);
+        try {
+            storage.save(tasks.asList());
+        } catch (IOException exception) {
+            tasks.delete(tasks.size() - 1);
+            throw exception;
+        }
+        ui.showAdded(task, tasks.size());
     }
 }

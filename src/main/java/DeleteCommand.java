@@ -1,3 +1,5 @@
+import java.io.IOException;
+
 /**
  * Represents a request to delete one task.
  */
@@ -13,12 +15,15 @@ public class DeleteCommand extends Command {
         this.taskIndex = taskIndex;
     }
 
-    /**
-     * Returns the zero-based task index.
-     *
-     * @return index of the task to delete
-     */
-    public int getTaskIndex() {
-        return taskIndex;
+    @Override
+    public void execute(TaskList tasks, Ui ui, Storage storage) throws IOException {
+        Task removedTask = tasks.delete(taskIndex);
+        try {
+            storage.save(tasks.asList());
+        } catch (IOException exception) {
+            tasks.restoreDeletedTask(taskIndex, removedTask);
+            throw exception;
+        }
+        ui.showDeleted(removedTask, tasks.size());
     }
 }
