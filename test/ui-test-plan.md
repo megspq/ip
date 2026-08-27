@@ -218,6 +218,7 @@ ____________________________________________________________
 
 ```text
 T | 1 | read book
+
 D | 0 | return book | Sunday
 E | 1 | project meeting | 2pm | 4pm
 ```
@@ -245,6 +246,119 @@ ____________________________________________________________
  1.[T][X] read book
  2.[D][ ] return book (by: Sunday)
  3.[E][X] project meeting (from: 2pm to: 4pm)
+____________________________________________________________
+  yippee glad to have helped (＠＾◡＾)
+  byebye !! have a good day (๑˃ᴗ˂)ﻭ
+____________________________________________________________
+```
+
+## UI-013: Handle a malformed data file
+
+**Aim:** Verify that Bob reports corrupt saved data without crashing or exposing a partially loaded task list.
+
+**Setup:** Create `data/bob.txt` with these contents:
+
+```text
+T | 0 | valid task
+X | 0 | unknown task
+```
+
+**Inputs:**
+
+```text
+list
+bye
+```
+
+**Expected output:**
+
+```text
+ ____        _     
+| __ )  ___ | |__  
+|  _ \ / _ \| '_ \ 
+| |_) | (_) | |_) |
+|____/ \___/|_.__/ 
+
+hello im bob !!
+how can i help :)
+____________________________________________________________
+ oopsies !! (´ ∀ ` *) couldn't load saved tasks: invalid data on line 2
+____________________________________________________________
+ here are your tasks (⌒‿⌒) 加油 !! :
+____________________________________________________________
+  yippee glad to have helped (＠＾◡＾)
+  byebye !! have a good day (๑˃ᴗ˂)ﻭ
+____________________________________________________________
+```
+
+## UI-014: Handle a save failure
+
+**Aim:** Verify that Bob reports a disk-write failure, keeps running, and rolls back the unsaved task.
+
+**Setup:** Create a regular file named `data`, preventing creation of `data/bob.txt`.
+
+**Inputs:**
+
+```text
+todo read book
+list
+bye
+```
+
+**Expected output:**
+
+```text
+ ____        _     
+| __ )  ___ | |__  
+|  _ \ / _ \| '_ \ 
+| |_) | (_) | |_) |
+|____/ \___/|_.__/ 
+
+hello im bob !!
+how can i help :)
+____________________________________________________________
+ oopsies !! (´ ∀ ` *) couldn't save your tasks; nothing was changed
+____________________________________________________________
+ here are your tasks (⌒‿⌒) 加油 !! :
+____________________________________________________________
+  yippee glad to have helped (＠＾◡＾)
+  byebye !! have a good day (๑˃ᴗ˂)ﻭ
+____________________________________________________________
+```
+
+## UI-015: Load escaped separator characters
+
+**Aim:** Verify that pipes and backslashes inside saved task fields are decoded as task text rather than separators.
+
+**Setup:** Create `data/bob.txt` with these contents:
+
+```text
+T | 0 | read \| review \\ notes
+D | 1 | return \| renew | Sun \| Mon
+```
+
+**Inputs:**
+
+```text
+list
+bye
+```
+
+**Expected output:**
+
+```text
+ ____        _     
+| __ )  ___ | |__  
+|  _ \ / _ \| '_ \ 
+| |_) | (_) | |_) |
+|____/ \___/|_.__/ 
+
+hello im bob !!
+how can i help :)
+____________________________________________________________
+ here are your tasks (⌒‿⌒) 加油 !! :
+ 1.[T][ ] read | review \ notes
+ 2.[D][X] return | renew (by: Sun | Mon)
 ____________________________________________________________
   yippee glad to have helped (＠＾◡＾)
   byebye !! have a good day (๑˃ᴗ˂)ﻭ

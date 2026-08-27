@@ -18,7 +18,7 @@ public class Deadline extends Task {
 
     @Override
     public String toStorageString() {
-        return "D | " + super.toStorageString() + " | " + by;
+        return "D | " + super.toStorageString() + " | " + escapeStorageField(by);
     }
 
     @Override

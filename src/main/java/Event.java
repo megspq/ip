@@ -21,7 +21,8 @@ public class Event extends Task {
 
     @Override
     public String toStorageString() {
-        return "E | " + super.toStorageString() + " | " + from + " | " + to;
+        return "E | " + super.toStorageString() + " | "
+                + escapeStorageField(from) + " | " + escapeStorageField(to);
     }
 
     @Override

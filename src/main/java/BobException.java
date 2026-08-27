@@ -1,6 +1,15 @@
+/**
+ * Indicates that a user command is invalid and contains a user-facing explanation.
+ */
 public class BobException extends Exception {
     private static final long serialVersionUID = 1L;
- BobException(String message) {
+
+    /**
+     * Creates an exception for an invalid command.
+     *
+     * @param message explanation to show the user
+     */
+    BobException(String message) {
         super(message);
     }
 }
