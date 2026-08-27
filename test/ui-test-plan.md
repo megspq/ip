@@ -9,11 +9,12 @@ This is the source of truth for Bob's console UI tests. Cases run in order, each
 - **Launch command:** `java -cp /private/tmp/bob-ui-test-classes Bob`
 - **Comparison:** Compare stdout exactly after normalizing line endings to LF. Prompts, spaces, and blank lines are significant.
 - **Timeout:** 10 seconds per case.
-- **Isolation:** Each case starts Bob in a fresh process with an empty in-memory task list.
+- **Default setup:** Delete `data/bob.txt` before each case so every case starts with an empty task list. Cases that need saved tasks state their own setup instead.
+- **Isolation:** Each case starts Bob in a fresh process after its setup is complete.
 
 ## UI-001: Add and list todo tasks
 
-**Aim:** Verify that todo tasks can be added and displayed using the `list` command.
+**Aim:** Verify that todo tasks can be added, saved without extra console output, and displayed using the `list` command.
 
 **Inputs:**
 
@@ -55,7 +56,7 @@ ____________________________________________________________
 
 ## UI-002: Mark a task as done
 
-**Aim:** Verify that `mark` changes a task's status from incomplete to complete.
+**Aim:** Verify that `mark` changes and saves a task's status from incomplete to complete.
 
 **Inputs:**
 
@@ -95,7 +96,7 @@ ____________________________________________________________
 
 ## UI-003: Unmark a completed task
 
-**Aim:** Verify that `unmark` changes a completed task back to incomplete.
+**Aim:** Verify that `unmark` changes and saves a completed task back to incomplete.
 
 **Inputs:**
 
@@ -209,6 +210,161 @@ ____________________________________________________________
 ____________________________________________________________
 ```
 
+## UI-012: Load saved tasks on startup
+
+**Aim:** Verify that Bob loads todo, deadline, and event tasks, including their completion states, from the data file when it starts.
+
+**Setup:** Create `data/bob.txt` with these contents:
+
+```text
+T | 1 | read book
+
+D | 0 | return book | Sunday
+E | 1 | project meeting | 2pm | 4pm
+```
+
+**Inputs:**
+
+```text
+list
+bye
+```
+
+**Expected output:**
+
+```text
+ ____        _     
+| __ )  ___ | |__  
+|  _ \ / _ \| '_ \ 
+| |_) | (_) | |_) |
+|____/ \___/|_.__/ 
+
+hello im bob !!
+how can i help :)
+____________________________________________________________
+ here are your tasks (⌒‿⌒) 加油 !! :
+ 1.[T][X] read book
+ 2.[D][ ] return book (by: Sunday)
+ 3.[E][X] project meeting (from: 2pm to: 4pm)
+____________________________________________________________
+  yippee glad to have helped (＠＾◡＾)
+  byebye !! have a good day (๑˃ᴗ˂)ﻭ
+____________________________________________________________
+```
+
+## UI-013: Handle a malformed data file
+
+**Aim:** Verify that Bob reports corrupt saved data without crashing or exposing a partially loaded task list.
+
+**Setup:** Create `data/bob.txt` with these contents:
+
+```text
+T | 0 | valid task
+X | 0 | unknown task
+```
+
+**Inputs:**
+
+```text
+list
+bye
+```
+
+**Expected output:**
+
+```text
+ ____        _     
+| __ )  ___ | |__  
+|  _ \ / _ \| '_ \ 
+| |_) | (_) | |_) |
+|____/ \___/|_.__/ 
+
+hello im bob !!
+how can i help :)
+____________________________________________________________
+ oopsies !! (´ ∀ ` *) couldn't load saved tasks: invalid data on line 2
+____________________________________________________________
+ here are your tasks (⌒‿⌒) 加油 !! :
+____________________________________________________________
+  yippee glad to have helped (＠＾◡＾)
+  byebye !! have a good day (๑˃ᴗ˂)ﻭ
+____________________________________________________________
+```
+
+## UI-014: Handle a save failure
+
+**Aim:** Verify that Bob reports a disk-write failure, keeps running, and rolls back the unsaved task.
+
+**Setup:** Create a regular file named `data`, preventing creation of `data/bob.txt`.
+
+**Inputs:**
+
+```text
+todo read book
+list
+bye
+```
+
+**Expected output:**
+
+```text
+ ____        _     
+| __ )  ___ | |__  
+|  _ \ / _ \| '_ \ 
+| |_) | (_) | |_) |
+|____/ \___/|_.__/ 
+
+hello im bob !!
+how can i help :)
+____________________________________________________________
+ oopsies !! (´ ∀ ` *) couldn't save your tasks; nothing was changed
+____________________________________________________________
+ here are your tasks (⌒‿⌒) 加油 !! :
+____________________________________________________________
+  yippee glad to have helped (＠＾◡＾)
+  byebye !! have a good day (๑˃ᴗ˂)ﻭ
+____________________________________________________________
+```
+
+## UI-015: Load escaped separator characters
+
+**Aim:** Verify that pipes and backslashes inside saved task fields are decoded as task text rather than separators.
+
+**Setup:** Create `data/bob.txt` with these contents:
+
+```text
+T | 0 | read \| review \\ notes
+D | 1 | return \| renew | Sun \| Mon
+```
+
+**Inputs:**
+
+```text
+list
+bye
+```
+
+**Expected output:**
+
+```text
+ ____        _     
+| __ )  ___ | |__  
+|  _ \ / _ \| '_ \ 
+| |_) | (_) | |_) |
+|____/ \___/|_.__/ 
+
+hello im bob !!
+how can i help :)
+____________________________________________________________
+ here are your tasks (⌒‿⌒) 加油 !! :
+ 1.[T][ ] read | review \ notes
+ 2.[D][X] return | renew (by: Sun | Mon)
+____________________________________________________________
+  yippee glad to have helped (＠＾◡＾)
+  byebye !! have a good day (๑˃ᴗ˂)ﻭ
+____________________________________________________________
+```
+
 ## UI-006: Reject malformed deadline input
 
 **Aim:** Verify that a deadline without `/by` is rejected.
@@ -301,7 +457,7 @@ ____________________________________________________________
 
 ## UI-011: Delete a task
 
-**Aim:** Verify that `delete` removes the selected task, reports the new count, and renumbers the remaining tasks.
+**Aim:** Verify that `delete` removes and saves the selected task, reports the new count, and renumbers the remaining tasks.
 
 **Inputs:**
 
@@ -348,9 +504,9 @@ ____________________________________________________________
    [T][ ] borrow book
  you now have 5 tasks in the list, get to it !!
 ____________________________________________________________
- Noted. I've removed this task:
+ okays here's the task i deleted: 
    [E][ ] project meeting (from: Aug 6th 2pm to: 4pm)
- Now you have 4 tasks in the list.
+ pls get to the remaining 4 tasks in your list
 ____________________________________________________________
  here are your tasks (⌒‿⌒) 加油 !! :
  1.[T][ ] read book
