@@ -5,58 +5,73 @@ import java.nio.file.Path;
  * Runs the Bob task-management chatbot.
  */
 public class Bob {
-    private static final Storage STORAGE = new Storage(Path.of("data", "bob.txt"));
-    private static final Ui UI = new Ui();
+    private final Storage storage;
+    private final Ui ui;
+    private TaskList tasks;
 
-    public static void main(String[] args) {
-        UI.showWelcome();
+    /**
+     * Creates a Bob application that saves tasks at the given file path.
+     *
+     * @param filePath location of the task data file
+     */
+    public Bob(String filePath) {
+        this.storage = new Storage(Path.of(filePath));
+        this.ui = new Ui();
+        this.tasks = new TaskList();
+    }
 
-        TaskList tasks = loadTasks();
+    /**
+     * Starts Bob's command-reading loop and runs until the user exits or input ends.
+     */
+    public void run() {
+        ui.showWelcome();
 
-        while (UI.hasNextCommand()) {
-            String input = UI.readCommand();
+        tasks = loadTasks();
+
+        while (ui.hasNextCommand()) {
+            String input = ui.readCommand();
 
             try {
                 Parser.ParsedCommand command = Parser.parse(input, tasks.size());
                 if (command.getType() == Parser.CommandType.BYE) {
-                    UI.showGoodbye();
+                    ui.showGoodbye();
                     break;
                 } else if (command.getType() == Parser.CommandType.LIST) {
-                    UI.showTasks(tasks.asList());
+                    ui.showTasks(tasks.asList());
                 } else if (command.getType() == Parser.CommandType.MARK) {
                     int taskIndex = command.getTaskIndex();
-                    setDone(tasks, taskIndex, true);
-                    UI.showMarked(tasks.get(taskIndex));
+                    setDone(taskIndex, true);
+                    ui.showMarked(tasks.get(taskIndex));
                 } else if (command.getType() == Parser.CommandType.UNMARK) {
                     int taskIndex = command.getTaskIndex();
-                    setDone(tasks, taskIndex, false);
-                    UI.showUnmarked(tasks.get(taskIndex));
+                    setDone(taskIndex, false);
+                    ui.showUnmarked(tasks.get(taskIndex));
                 } else if (command.getType() == Parser.CommandType.DELETE) {
                     int taskIndex = command.getTaskIndex();
-                    Task removedTask = deleteTask(tasks, taskIndex);
-                    UI.showDeleted(removedTask, tasks.size());
+                    Task removedTask = deleteTask(taskIndex);
+                    ui.showDeleted(removedTask, tasks.size());
                 } else if (command.getType() == Parser.CommandType.ADD) {
-                    addTask(tasks, command.getTask());
+                    addTask(command.getTask());
                 }
             } catch (BobException exception) {
-                UI.showError(exception.getMessage());
+                ui.showError(exception.getMessage());
             } catch (IOException exception) {
-                UI.showError("couldn't save your tasks; nothing was changed");
+                ui.showError("couldn't save your tasks; nothing was changed");
             }
-            UI.showDivider();
+            ui.showDivider();
         }
-        UI.close();
+        ui.close();
     }
 
     /**
      * Loads saved tasks, falling back to an empty list if the data cannot be used.
      */
-    private static TaskList loadTasks() {
+    private TaskList loadTasks() {
         try {
-            return new TaskList(STORAGE.load());
+            return new TaskList(storage.load());
         } catch (StorageException exception) {
-            UI.showError("couldn't load saved tasks: " + exception.getMessage());
-            UI.showDivider();
+            ui.showError("couldn't load saved tasks: " + exception.getMessage());
+            ui.showDivider();
             return new TaskList();
         }
     }
@@ -64,7 +79,7 @@ public class Bob {
     /**
      * Changes a task's status and restores it if saving fails.
      */
-    private static void setDone(TaskList tasks, int taskIndex, boolean isDone) throws IOException {
+    private void setDone(int taskIndex, boolean isDone) throws IOException {
         Task task = tasks.get(taskIndex);
         boolean wasDone = task.isDone();
         if (isDone) {
@@ -73,7 +88,7 @@ public class Bob {
             tasks.unmark(taskIndex);
         }
         try {
-            STORAGE.save(tasks.asList());
+            storage.save(tasks.asList());
         } catch (IOException exception) {
             tasks.restoreDoneState(taskIndex, wasDone);
             throw exception;
@@ -83,10 +98,10 @@ public class Bob {
     /**
      * Deletes a task and restores its position if saving fails.
      */
-    private static Task deleteTask(TaskList tasks, int taskIndex) throws IOException {
+    private Task deleteTask(int taskIndex) throws IOException {
         Task removedTask = tasks.delete(taskIndex);
         try {
-            STORAGE.save(tasks.asList());
+            storage.save(tasks.asList());
             return removedTask;
         } catch (IOException exception) {
             tasks.restoreDeletedTask(taskIndex, removedTask);
@@ -94,14 +109,23 @@ public class Bob {
         }
     }
 
-    private static void addTask(TaskList tasks, Task task) throws IOException {
+    private void addTask(Task task) throws IOException {
         tasks.add(task);
         try {
-            STORAGE.save(tasks.asList());
+            storage.save(tasks.asList());
         } catch (IOException exception) {
             tasks.delete(tasks.size() - 1);
             throw exception;
         }
-        UI.showAdded(task, tasks.size());
+        ui.showAdded(task, tasks.size());
+    }
+
+    /**
+     * Starts Bob using the default task data file.
+     *
+     * @param args command-line arguments, which Bob does not use
+     */
+    public static void main(String[] args) {
+        new Bob("data/bob.txt").run();
     }
 }
