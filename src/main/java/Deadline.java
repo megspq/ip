@@ -1,28 +1,32 @@
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
+import java.util.Locale;
+
 /**
- * Represents a task that must be completed by a given date or time.
- * The date or time is kept as text so users can enter any useful format.
+ * Represents a task that must be completed by a given date.
  */
 public class Deadline extends Task {
-    private final String by;
+    private static final DateTimeFormatter DISPLAY_FORMAT = DateTimeFormatter.ofPattern("MMM dd yyyy", Locale.ENGLISH);
+    private final LocalDate by;
 
     /**
      * Creates an incomplete deadline task.
      *
      * @param description description of the task
-     * @param by date or time by which the task should be completed
+     * @param by date by which the task should be completed
      */
-    public Deadline(String description, String by) {
+    public Deadline(String description, LocalDate by) {
         super(description);
         this.by = by;
     }
 
     @Override
     public String toStorageString() {
-        return "D | " + super.toStorageString() + " | " + escapeStorageField(by);
+        return "D | " + super.toStorageString() + " | " + by;
     }
 
     @Override
     public String toString() {
-        return "[D]" + super.toString() + " (by: " + by + ")";
+        return "[D]" + super.toString() + " (by: " + by.format(DISPLAY_FORMAT) + ")";
     }
 }
