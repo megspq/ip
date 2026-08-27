@@ -1,0 +1,174 @@
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeParseException;
+import java.time.format.ResolverStyle;
+
+/**
+ * Interprets user input and converts it into commands that Bob can execute.
+ */
+public class Parser {
+    private static final DateTimeFormatter EVENT_INPUT_FORMAT = DateTimeFormatter
+            .ofPattern("uuuu-MM-dd HHmm")
+            .withResolverStyle(ResolverStyle.STRICT);
+
+    private Parser() {
+        // This class contains only stateless parsing operations.
+    }
+
+    /**
+     * Identifies the action requested by a parsed command.
+     */
+    public enum CommandType {
+        BYE, LIST, MARK, UNMARK, DELETE, ADD
+    }
+
+    /**
+     * Holds the action and any task data produced while parsing a command.
+     */
+    public static class ParsedCommand {
+        private final CommandType type;
+        private final Task task;
+        private final int taskIndex;
+
+        private ParsedCommand(CommandType type, Task task, int taskIndex) {
+            this.type = type;
+            this.task = task;
+            this.taskIndex = taskIndex;
+        }
+
+        /**
+         * Returns the action requested by the user.
+         *
+         * @return parsed command type
+         */
+        public CommandType getType() {
+            return type;
+        }
+
+        /**
+         * Returns the task created by an add command.
+         *
+         * @return parsed task, or {@code null} for commands that do not add a task
+         */
+        public Task getTask() {
+            return task;
+        }
+
+        /**
+         * Returns the zero-based task index used by a task-selection command.
+         *
+         * @return parsed task index, or {@code -1} when the command does not select a task
+         */
+        public int getTaskIndex() {
+            return taskIndex;
+        }
+    }
+
+    /**
+     * Parses one line of input, validating its arguments against the task count.
+     *
+     * @param input command entered by the user
+     * @param taskCount current number of tasks
+     * @return command data ready for Bob to execute
+     * @throws BobException if the command or any of its arguments is invalid
+     */
+    public static ParsedCommand parse(String input, int taskCount) throws BobException {
+        if (input.equals("bye")) {
+            return new ParsedCommand(CommandType.BYE, null, -1);
+        } else if (input.equals("list")) {
+            return new ParsedCommand(CommandType.LIST, null, -1);
+        } else if (input.equals("mark") || input.startsWith("mark ")) {
+            return taskSelection(CommandType.MARK, input, "mark", taskCount);
+        } else if (input.equals("unmark") || input.startsWith("unmark ")) {
+            return taskSelection(CommandType.UNMARK, input, "unmark", taskCount);
+        } else if (input.equals("delete") || input.startsWith("delete ")) {
+            return taskSelection(CommandType.DELETE, input, "delete", taskCount);
+        } else if (input.equals("todo") || input.startsWith("todo ")) {
+            return new ParsedCommand(CommandType.ADD, parseTodo(input), -1);
+        } else if (input.equals("deadline") || input.startsWith("deadline ")) {
+            return new ParsedCommand(CommandType.ADD, parseDeadline(input), -1);
+        } else if (input.equals("event") || input.startsWith("event ")) {
+            return new ParsedCommand(CommandType.ADD, parseEvent(input), -1);
+        }
+        throw new BobException("pls try either one of list, todo, deadline, event, mark, unmark, delete, or bye");
+    }
+
+    private static ParsedCommand taskSelection(CommandType type, String input,
+            String command, int taskCount) throws BobException {
+        return new ParsedCommand(type, null, parseTaskIndex(input, command, taskCount));
+    }
+
+    private static int parseTaskIndex(String input, String command, int taskCount) throws BobException {
+        String numberText = input.substring(command.length()).trim();
+        if (numberText.isEmpty()) {
+            throw new BobException("can't help if idk which task no");
+        }
+
+        final int taskNumber;
+        try {
+            taskNumber = Integer.parseInt(numberText);
+        } catch (NumberFormatException exception) {
+            throw new BobException("enter a valid task no pls");
+        }
+        if (taskCount == 0) {
+            throw new BobException("can't do anyth if there's no task");
+        }
+        if (taskNumber < 1 || taskNumber > taskCount) {
+            throw new BobException("task doesn't exist, whats your fav no from 1 to " + taskCount + "?");
+        }
+        return taskNumber - 1;
+    }
+
+    private static Todo parseTodo(String input) throws BobException {
+        String description = input.substring("todo".length()).trim();
+        requireNotEmpty(description, "oopsies a todo needs a desc, eg: todo sleep");
+        return new Todo(description);
+    }
+
+    private static Deadline parseDeadline(String input) throws BobException {
+        int byPosition = input.indexOf(" /by");
+        if (byPosition == -1) {
+            throw new BobException("a deadline needs /by and a date, eg play /by 2019-12-02");
+        }
+        String description = input.substring("deadline".length(), byPosition).trim();
+        String by = input.substring(byPosition + " /by".length()).trim();
+        requireNotEmpty(description, "pls give a desc before /by.");
+        requireNotEmpty(by, "pls give a date after /by.");
+        try {
+            return new Deadline(description, LocalDate.parse(by));
+        } catch (DateTimeParseException exception) {
+            throw new BobException("use yyyy-MM-dd for deadline dates, eg 2019-12-02");
+        }
+    }
+
+    private static Event parseEvent(String input) throws BobException {
+        int fromPosition = input.indexOf(" /from");
+        int toPosition = input.indexOf(" /to");
+        if (fromPosition == -1 || toPosition == -1 || toPosition < fromPosition) {
+            throw new BobException("an event needs /from and /to, eg event meeting /from 2019-12-02 1400 /to 2019-12-02 1600");
+        }
+        String description = input.substring("event".length(), fromPosition).trim();
+        String from = input.substring(fromPosition + " /from".length(), toPosition).trim();
+        String to = input.substring(toPosition + " /to".length()).trim();
+        requireNotEmpty(description, "pls gimme event desc before /from.");
+        requireNotEmpty(from, "pls gimme start time after /from.");
+        requireNotEmpty(to, "pls gimme end time after /to.");
+        try {
+            LocalDateTime start = LocalDateTime.parse(from, EVENT_INPUT_FORMAT);
+            LocalDateTime end = LocalDateTime.parse(to, EVENT_INPUT_FORMAT);
+            if (end.isBefore(start)) {
+                throw new BobException("an event's end cannot be before its start");
+            }
+            return new Event(description, start, end);
+        } catch (DateTimeParseException exception) {
+            throw new BobException("use yyyy-MM-dd HHmm for event dates and times, eg 2019-12-02 1800");
+        }
+    }
+
+    private static void requireNotEmpty(String value, String message) throws BobException {
+        if (value.isEmpty()) {
+            throw new BobException(message);
+        }
+    }
+}
