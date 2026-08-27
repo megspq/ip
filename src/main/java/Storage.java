@@ -2,6 +2,10 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.StandardCopyOption;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+import java.time.format.ResolverStyle;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -9,6 +13,9 @@ import java.util.List;
  * Loads and saves Bob's tasks using a file on the local hard disk.
  */
 public class Storage {
+    private static final DateTimeFormatter EVENT_STORAGE_FORMAT = DateTimeFormatter
+            .ofPattern("uuuu-MM-dd HHmm")
+            .withResolverStyle(ResolverStyle.STRICT);
     private final Path filePath;
 
     /**
@@ -71,11 +78,13 @@ public class Storage {
         }
         case "D" -> {
             requireFieldCount(fields, 4);
-            yield new Deadline(requireText(fields[2]), requireText(fields[3]));
+            yield new Deadline(requireText(fields[2]), LocalDate.parse(requireText(fields[3])));
         }
         case "E" -> {
             requireFieldCount(fields, 5);
-            yield new Event(requireText(fields[2]), requireText(fields[3]), requireText(fields[4]));
+            yield new Event(requireText(fields[2]),
+                    LocalDateTime.parse(requireText(fields[3]), EVENT_STORAGE_FORMAT),
+                    LocalDateTime.parse(requireText(fields[4]), EVENT_STORAGE_FORMAT));
         }
         default -> throw new IllegalArgumentException("Unknown task type: " + fields[0]);
         };

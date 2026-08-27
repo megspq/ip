@@ -140,12 +140,12 @@ ____________________________________________________________
 
 ## UI-004: Add a deadline
 
-**Aim:** Verify that a deadline stores and displays its description and deadline.
+**Aim:** Verify that a deadline parses an ISO date and displays it in a friendly format.
 
 **Inputs:**
 
 ```text
-deadline return book /by Sunday
+deadline return book /by 2019-12-02
 list
 bye
 ```
@@ -163,11 +163,11 @@ hello im bob !!
 how can i help :)
 ____________________________________________________________
  okays task added:
-   [D][ ] return book (by: Sunday)
+   [D][ ] return book (by: Dec 02 2019)
  you now have 1 tasks in the list, get to it !!
 ____________________________________________________________
  here are your tasks (⌒‿⌒) 加油 !! :
- 1.[D][ ] return book (by: Sunday)
+ 1.[D][ ] return book (by: Dec 02 2019)
 ____________________________________________________________
   yippee glad to have helped (＠＾◡＾)
   byebye !! have a good day (๑˃ᴗ˂)ﻭ
@@ -176,12 +176,12 @@ ____________________________________________________________
 
 ## UI-005: Add an event
 
-**Aim:** Verify that an event stores and displays its description, start time, and end time.
+**Aim:** Verify that an event parses typed date-times and displays them in a friendly format.
 
 **Inputs:**
 
 ```text
-event project meeting /from 2pm /to 4pm
+event project meeting /from 2019-12-02 1400 /to 2019-12-02 1600
 list
 bye
 ```
@@ -199,11 +199,11 @@ hello im bob !!
 how can i help :)
 ____________________________________________________________
  okays task added:
-   [E][ ] project meeting (from: 2pm to: 4pm)
+   [E][ ] project meeting (from: Dec 02 2019, 2:00 PM to: Dec 02 2019, 4:00 PM)
  you now have 1 tasks in the list, get to it !!
 ____________________________________________________________
  here are your tasks (⌒‿⌒) 加油 !! :
- 1.[E][ ] project meeting (from: 2pm to: 4pm)
+ 1.[E][ ] project meeting (from: Dec 02 2019, 2:00 PM to: Dec 02 2019, 4:00 PM)
 ____________________________________________________________
   yippee glad to have helped (＠＾◡＾)
   byebye !! have a good day (๑˃ᴗ˂)ﻭ
@@ -219,8 +219,8 @@ ____________________________________________________________
 ```text
 T | 1 | read book
 
-D | 0 | return book | Sunday
-E | 1 | project meeting | 2pm | 4pm
+D | 0 | return book | 2019-12-02
+E | 1 | project meeting | 2019-12-02 1400 | 2019-12-02 1600
 ```
 
 **Inputs:**
@@ -244,8 +244,8 @@ how can i help :)
 ____________________________________________________________
  here are your tasks (⌒‿⌒) 加油 !! :
  1.[T][X] read book
- 2.[D][ ] return book (by: Sunday)
- 3.[E][X] project meeting (from: 2pm to: 4pm)
+ 2.[D][ ] return book (by: Dec 02 2019)
+ 3.[E][X] project meeting (from: Dec 02 2019, 2:00 PM to: Dec 02 2019, 4:00 PM)
 ____________________________________________________________
   yippee glad to have helped (＠＾◡＾)
   byebye !! have a good day (๑˃ᴗ˂)ﻭ
@@ -334,7 +334,7 @@ ____________________________________________________________
 
 ```text
 T | 0 | read \| review \\ notes
-D | 1 | return \| renew | Sun \| Mon
+D | 1 | return \| renew | 2019-12-02
 ```
 
 **Inputs:**
@@ -358,7 +358,7 @@ how can i help :)
 ____________________________________________________________
  here are your tasks (⌒‿⌒) 加油 !! :
  1.[T][ ] read | review \ notes
- 2.[D][X] return | renew (by: Sun | Mon)
+ 2.[D][X] return | renew (by: Dec 02 2019)
 ____________________________________________________________
   yippee glad to have helped (＠＾◡＾)
   byebye !! have a good day (๑˃ᴗ˂)ﻭ
@@ -388,7 +388,7 @@ bye
 hello im bob !!
 how can i help :)
 ____________________________________________________________
- oopsies !! (´ ∀ ` *) a deadline needs /by and a date or time, eg play /by today
+ oopsies !! (´ ∀ ` *) a deadline needs /by and a date, eg play /by 2019-12-02
 ____________________________________________________________
   yippee glad to have helped (＠＾◡＾)
   byebye !! have a good day (๑˃ᴗ˂)ﻭ
@@ -418,7 +418,7 @@ bye
 hello im bob !!
 how can i help :)
 ____________________________________________________________
- oopsies !! (´ ∀ ` *) an event needs /from and /to, eg event meeting /from 2pm /to 4pm
+ oopsies !! (´ ∀ ` *) an event needs /from and /to, eg event meeting /from 2019-12-02 1400 /to 2019-12-02 1600
 ____________________________________________________________
   yippee glad to have helped (＠＾◡＾)
   byebye !! have a good day (๑˃ᴗ˂)ﻭ
@@ -463,8 +463,8 @@ ____________________________________________________________
 
 ```text
 todo read book
-deadline return book /by June 6th
-event project meeting /from Aug 6th 2pm /to 4pm
+deadline return book /by 2019-06-06
+event project meeting /from 2019-08-06 1400 /to 2019-08-06 1600
 todo join sports club
 todo borrow book
 delete 3
@@ -489,11 +489,11 @@ ____________________________________________________________
  you now have 1 tasks in the list, get to it !!
 ____________________________________________________________
  okays task added:
-   [D][ ] return book (by: June 6th)
+   [D][ ] return book (by: Jun 06 2019)
  you now have 2 tasks in the list, get to it !!
 ____________________________________________________________
  okays task added:
-   [E][ ] project meeting (from: Aug 6th 2pm to: 4pm)
+   [E][ ] project meeting (from: Aug 06 2019, 2:00 PM to: Aug 06 2019, 4:00 PM)
  you now have 3 tasks in the list, get to it !!
 ____________________________________________________________
  okays task added:
@@ -505,12 +505,12 @@ ____________________________________________________________
  you now have 5 tasks in the list, get to it !!
 ____________________________________________________________
  okays here's the task i deleted: 
-   [E][ ] project meeting (from: Aug 6th 2pm to: 4pm)
+   [E][ ] project meeting (from: Aug 06 2019, 2:00 PM to: Aug 06 2019, 4:00 PM)
  pls get to the remaining 4 tasks in your list
 ____________________________________________________________
  here are your tasks (⌒‿⌒) 加油 !! :
  1.[T][ ] read book
- 2.[D][ ] return book (by: June 6th)
+ 2.[D][ ] return book (by: Jun 06 2019)
  3.[T][ ] join sports club
  4.[T][ ] borrow book
 ____________________________________________________________
@@ -527,7 +527,7 @@ ____________________________________________________________
 
 ```text
 todo
-deadline /by Sunday
+deadline /by 2019-12-02
 deadline return book /by
 event /from 2pm /to 4pm
 event meeting /from  /to 4pm
@@ -551,7 +551,7 @@ ____________________________________________________________
 ____________________________________________________________
  oopsies !! (´ ∀ ` *) pls give a desc before /by.
 ____________________________________________________________
- oopsies !! (´ ∀ ` *) pls give a date or time after /by.
+ oopsies !! (´ ∀ ` *) pls give a date after /by.
 ____________________________________________________________
  oopsies !! (´ ∀ ` *) pls gimme event desc before /from.
 ____________________________________________________________
@@ -605,6 +605,42 @@ ____________________________________________________________
  oopsies !! (´ ∀ ` *) task doesn't exist, whats your fav no from 1 to 1?
 ____________________________________________________________
  oopsies !! (´ ∀ ` *) task doesn't exist, whats your fav no from 1 to 1?
+____________________________________________________________
+  yippee glad to have helped (＠＾◡＾)
+  byebye !! have a good day (๑˃ᴗ˂)ﻭ
+____________________________________________________________
+```
+
+## UI-016: Reject invalid dates and times
+
+**Aim:** Verify that typed date fields reject invalid formats and that an event cannot end before it starts.
+
+**Inputs:**
+
+```text
+deadline return book /by 2/12/2019
+event meeting /from 2019-12-02 2pm /to 2019-12-02 1600
+event meeting /from 2019-12-02 1800 /to 2019-12-02 1600
+bye
+```
+
+**Expected output:**
+
+```text
+ ____        _     
+| __ )  ___ | |__  
+|  _ \ / _ \| '_ \ 
+| |_) | (_) | |_) |
+|____/ \___/|_.__/ 
+
+hello im bob !!
+how can i help :)
+____________________________________________________________
+ oopsies !! (´ ∀ ` *) use yyyy-MM-dd for deadline dates, eg 2019-12-02
+____________________________________________________________
+ oopsies !! (´ ∀ ` *) use yyyy-MM-dd HHmm for event dates and times, eg 2019-12-02 1800
+____________________________________________________________
+ oopsies !! (´ ∀ ` *) an event's end cannot be before its start
 ____________________________________________________________
   yippee glad to have helped (＠＾◡＾)
   byebye !! have a good day (๑˃ᴗ˂)ﻭ

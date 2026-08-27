@@ -1,5 +1,10 @@
 import java.io.IOException;
 import java.nio.file.Path;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeParseException;
+import java.time.format.ResolverStyle;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
@@ -10,6 +15,9 @@ import java.util.Scanner;
 public class Bob {
     private static final String DIVIDER = "____________________________________________________________";
     private static final Storage STORAGE = new Storage(Path.of("data", "bob.txt"));
+    private static final DateTimeFormatter EVENT_INPUT_FORMAT = DateTimeFormatter
+            .ofPattern("uuuu-MM-dd HHmm")
+            .withResolverStyle(ResolverStyle.STRICT);
 
     public static void main(String[] args) {
         Scanner scanner = new Scanner(System.in);
@@ -161,13 +169,17 @@ public class Bob {
     private static void addDeadline(List<Task> tasks, String input) throws BobException, IOException {
         int byPosition = input.indexOf(" /by");
         if (byPosition == -1) {
-            throw new BobException("a deadline needs /by and a date or time, eg play /by today");
+            throw new BobException("a deadline needs /by and a date, eg play /by 2019-12-02");
         }
         String description = input.substring("deadline".length(), byPosition).trim();
         String by = input.substring(byPosition + " /by".length()).trim();
         requireNotEmpty(description, "pls give a desc before /by.");
-        requireNotEmpty(by, "pls give a date or time after /by.");
-        addTask(tasks, new Deadline(description, by));
+        requireNotEmpty(by, "pls give a date after /by.");
+        try {
+            addTask(tasks, new Deadline(description, LocalDate.parse(by)));
+        } catch (DateTimeParseException exception) {
+            throw new BobException("use yyyy-MM-dd for deadline dates, eg 2019-12-02");
+        }
     }
 
     /**
@@ -177,7 +189,7 @@ public class Bob {
         int fromPosition = input.indexOf(" /from");
         int toPosition = input.indexOf(" /to");
         if (fromPosition == -1 || toPosition == -1 || toPosition < fromPosition) {
-            throw new BobException("an event needs /from and /to, eg event meeting /from 2pm /to 4pm");
+            throw new BobException("an event needs /from and /to, eg event meeting /from 2019-12-02 1400 /to 2019-12-02 1600");
         }
         String description = input.substring("event".length(), fromPosition).trim();
         String from = input.substring(fromPosition + " /from".length(), toPosition).trim();
@@ -185,7 +197,16 @@ public class Bob {
         requireNotEmpty(description, "pls gimme event desc before /from.");
         requireNotEmpty(from, "pls gimme start time after /from.");
         requireNotEmpty(to, "pls gimme end time after /to.");
-        addTask(tasks, new Event(description, from, to));
+        try {
+            LocalDateTime start = LocalDateTime.parse(from, EVENT_INPUT_FORMAT);
+            LocalDateTime end = LocalDateTime.parse(to, EVENT_INPUT_FORMAT);
+            if (end.isBefore(start)) {
+                throw new BobException("an event's end cannot be before its start");
+            }
+            addTask(tasks, new Event(description, start, end));
+        } catch (DateTimeParseException exception) {
+            throw new BobException("use yyyy-MM-dd HHmm for event dates and times, eg 2019-12-02 1800");
+        }
     }
 
     private static void requireNotEmpty(String value, String message) throws BobException {
