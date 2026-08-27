@@ -10,6 +10,7 @@ import bob.command.AddCommand;
 import bob.command.Command;
 import bob.command.DeleteCommand;
 import bob.command.ExitCommand;
+import bob.command.FindCommand;
 import bob.command.ListCommand;
 import bob.command.MarkCommand;
 import bob.command.UnmarkCommand;
@@ -42,6 +43,8 @@ public class Parser {
             return new ExitCommand();
         } else if (input.equals("list")) {
             return new ListCommand();
+        } else if (input.equals("find") || input.startsWith("find ")) {
+            return new FindCommand(parseKeyword(input));
         } else if (input.equals("mark") || input.startsWith("mark ")) {
             return new MarkCommand(parseTaskNumber(input, "mark"));
         } else if (input.equals("unmark") || input.startsWith("unmark ")) {
@@ -56,7 +59,21 @@ public class Parser {
             return new AddCommand(parseEvent(input));
         }
         throw new BobException(
-                "pls try either one of list, todo, deadline, event, mark, unmark, delete, or bye");
+                "pls try either one of list, find, todo, deadline, event, mark, unmark, delete, or bye");
+    }
+
+    /**
+     * Extracts and validates the keyword following the find command.
+     *
+     * @param input complete user input
+     * @return keyword to search for
+     * @throws BobException if the keyword is missing
+     */
+
+    private static String parseKeyword(String input) throws BobException {
+        String keyword = input.substring("find".length()).trim();
+        requireNotEmpty(keyword, "pls give a keyword to find");
+        return keyword;
     }
 
     /**

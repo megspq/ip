@@ -11,6 +11,22 @@ import bob.BobException;
 
 class TaskListTest {
     @Test
+    void find_matchingKeyword_returnsMatchingTasks() {
+        Todo readBook = new Todo("read book");
+        Todo returnBook = new Todo("return book");
+        TaskList tasks = new TaskList(List.of(readBook, new Todo("buy pen"), returnBook));
+
+        assertEquals(List.of(readBook, returnBook), tasks.find("book"));
+    }
+
+    @Test
+    void find_noMatchingKeyword_returnsEmptyList() {
+        TaskList tasks = new TaskList(List.of(new Todo("read book")));
+
+        assertEquals(List.of(), tasks.find("pen"));
+    }
+
+    @Test
     void getTaskIndex_firstTaskNumber_returnsZero() throws BobException {
         TaskList tasks = new TaskList(List.of(new Todo("first"), new Todo("second")));
 
