@@ -5,8 +5,6 @@ import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
 import java.time.format.ResolverStyle;
-import java.util.ArrayList;
-import java.util.List;
 
 /**
  * Runs the Bob task-management chatbot.
@@ -21,7 +19,7 @@ public class Bob {
     public static void main(String[] args) {
         UI.showWelcome();
 
-        List<Task> tasks = loadTasks();
+        TaskList tasks = loadTasks();
 
         while (UI.hasNextCommand()) {
             String input = UI.readCommand();
@@ -33,7 +31,7 @@ public class Bob {
 
             try {
                 if (input.equals("list")) {
-                    UI.showTasks(tasks);
+                    UI.showTasks(tasks.asList());
                 } else if (input.equals("mark") || input.startsWith("mark ")) {
                     int taskIndex = parseTaskIndex(input, "mark", tasks.size());
                     setDone(tasks, taskIndex, true);
@@ -70,35 +68,31 @@ public class Bob {
     /**
      * Loads saved tasks, falling back to an empty list if the data cannot be used.
      */
-    private static List<Task> loadTasks() {
+    private static TaskList loadTasks() {
         try {
-            return STORAGE.load();
+            return new TaskList(STORAGE.load());
         } catch (StorageException exception) {
             UI.showError("couldn't load saved tasks: " + exception.getMessage());
             UI.showDivider();
-            return new ArrayList<>();
+            return new TaskList();
         }
     }
 
     /**
      * Changes a task's status and restores it if saving fails.
      */
-    private static void setDone(List<Task> tasks, int taskIndex, boolean isDone) throws IOException {
+    private static void setDone(TaskList tasks, int taskIndex, boolean isDone) throws IOException {
         Task task = tasks.get(taskIndex);
         boolean wasDone = task.isDone();
         if (isDone) {
-            task.markAsDone();
+            tasks.mark(taskIndex);
         } else {
-            task.markAsNotDone();
+            tasks.unmark(taskIndex);
         }
         try {
-            STORAGE.save(tasks);
+            STORAGE.save(tasks.asList());
         } catch (IOException exception) {
-            if (wasDone) {
-                task.markAsDone();
-            } else {
-                task.markAsNotDone();
-            }
+            tasks.restoreDoneState(taskIndex, wasDone);
             throw exception;
         }
     }
@@ -106,13 +100,13 @@ public class Bob {
     /**
      * Deletes a task and restores its position if saving fails.
      */
-    private static Task deleteTask(List<Task> tasks, int taskIndex) throws IOException {
-        Task removedTask = tasks.remove(taskIndex);
+    private static Task deleteTask(TaskList tasks, int taskIndex) throws IOException {
+        Task removedTask = tasks.delete(taskIndex);
         try {
-            STORAGE.save(tasks);
+            STORAGE.save(tasks.asList());
             return removedTask;
         } catch (IOException exception) {
-            tasks.add(taskIndex, removedTask);
+            tasks.restoreDeletedTask(taskIndex, removedTask);
             throw exception;
         }
     }
@@ -141,7 +135,7 @@ public class Bob {
     /**
      * Validates and adds a deadline command's description and deadline.
      */
-    private static void addDeadline(List<Task> tasks, String input) throws BobException, IOException {
+    private static void addDeadline(TaskList tasks, String input) throws BobException, IOException {
         int byPosition = input.indexOf(" /by");
         if (byPosition == -1) {
             throw new BobException("a deadline needs /by and a date, eg play /by 2019-12-02");
@@ -160,7 +154,7 @@ public class Bob {
     /**
      * Validates and adds an event command's description, start, and end.
      */
-    private static void addEvent(List<Task> tasks, String input) throws BobException, IOException {
+    private static void addEvent(TaskList tasks, String input) throws BobException, IOException {
         int fromPosition = input.indexOf(" /from");
         int toPosition = input.indexOf(" /to");
         if (fromPosition == -1 || toPosition == -1 || toPosition < fromPosition) {
@@ -190,12 +184,12 @@ public class Bob {
         }
     }
 
-    private static void addTask(List<Task> tasks, Task task) throws IOException {
+    private static void addTask(TaskList tasks, Task task) throws IOException {
         tasks.add(task);
         try {
-            STORAGE.save(tasks);
+            STORAGE.save(tasks.asList());
         } catch (IOException exception) {
-            tasks.remove(tasks.size() - 1);
+            tasks.delete(tasks.size() - 1);
             throw exception;
         }
         UI.showAdded(task, tasks.size());
