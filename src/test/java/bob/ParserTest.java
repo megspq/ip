@@ -39,8 +39,8 @@ class ParserTest {
 
     @Test
     void parse_eventEndingBeforeStart_throwsBobException() {
-        assertThrows(BobException.class,
-                () -> Parser.parse("event meeting /from 2026-08-28 1600 /to 2026-08-28 1400"));
+        String input = "event meeting /from 2026-08-28 1600 /to 2026-08-28 1400";
+        assertThrows(BobException.class, () -> Parser.parse(input));
     }
 
     @Test

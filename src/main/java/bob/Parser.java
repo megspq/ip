@@ -16,7 +16,6 @@ import bob.command.MarkCommand;
 import bob.command.UnmarkCommand;
 import bob.task.Deadline;
 import bob.task.Event;
-import bob.task.Task;
 import bob.task.Todo;
 
 /**
