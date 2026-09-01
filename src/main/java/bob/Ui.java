@@ -1,5 +1,6 @@
 package bob;
 
+import java.io.PrintStream;
 import java.util.List;
 import java.util.Scanner;
 
@@ -10,6 +11,7 @@ import bob.task.Task;
  */
 public class Ui {
     private static final String DIVIDER = "____________________________________________________________";
+    private final PrintStream output;
     private final Scanner scanner;
 
     /**
@@ -17,6 +19,17 @@ public class Ui {
      */
     public Ui() {
         this.scanner = new Scanner(System.in);
+        this.output = System.out;
+    }
+
+    /**
+     * Creates a response-only user interface that writes to the given stream.
+     *
+     * @param output destination for Bob's response
+     */
+    public Ui(PrintStream output) {
+        this.scanner = null;
+        this.output = output;
     }
 
     /**
@@ -29,9 +42,9 @@ public class Ui {
                 + "| |_) | (_) | |_) |\n"
                 + "|____/ \\___/|_.__/ \n";
 
-        System.out.println(banner);
-        System.out.println("hello im bob !!");
-        System.out.println("how can i help :)");
+        output.println(banner);
+        output.println("hello im bob !!");
+        output.println("how can i help :)");
         showDivider();
     }
 
@@ -57,8 +70,8 @@ public class Ui {
      * Displays Bob's farewell.
      */
     public void showGoodbye() {
-        System.out.println("  yippee glad to have helped (＠＾◡＾)");
-        System.out.println("  byebye !! have a good day (๑˃ᴗ˂)ﻭ");
+        output.println("  yippee glad to have helped (＠＾◡＾)");
+        output.println("  byebye !! have a good day (๑˃ᴗ˂)ﻭ");
     }
 
     /**
@@ -67,9 +80,9 @@ public class Ui {
      * @param tasks tasks to display
      */
     public void showTasks(List<Task> tasks) {
-        System.out.println(" here are your tasks (⌒‿⌒) 加油 !! :");
+        output.println(" here are your tasks (⌒‿⌒) 加油 !! :");
         for (int i = 0; i < tasks.size(); i++) {
-            System.out.println(" " + (i + 1) + "." + tasks.get(i));
+            output.println(" " + (i + 1) + "." + tasks.get(i));
         }
     }
 
@@ -79,9 +92,9 @@ public class Ui {
      * @param tasks matching tasks to display
      */
     public void showFoundTasks(List<Task> tasks) {
-        System.out.println(" here's what i found:");
+        output.println(" here's what i found:");
         for (int i = 0; i < tasks.size(); i++) {
-            System.out.println(" " + (i + 1) + "." + tasks.get(i));
+            output.println(" " + (i + 1) + "." + tasks.get(i));
         }
     }
 
@@ -91,8 +104,8 @@ public class Ui {
      * @param task task that was marked
      */
     public void showMarked(Task task) {
-        System.out.println(" yippee task done, i've marked it as so:");
-        System.out.println("   " + task);
+        output.println(" yippee task done, i've marked it as so:");
+        output.println("   " + task);
     }
 
     /**
@@ -101,8 +114,8 @@ public class Ui {
      * @param task task that was unmarked
      */
     public void showUnmarked(Task task) {
-        System.out.println(" okie, i've marked this task incomplete:");
-        System.out.println("   " + task);
+        output.println(" okie, i've marked this task incomplete:");
+        output.println("   " + task);
     }
 
     /**
@@ -112,9 +125,9 @@ public class Ui {
      * @param remainingTaskCount number of tasks left
      */
     public void showDeleted(Task task, int remainingTaskCount) {
-        System.out.println(" okays here's the task i deleted: ");
-        System.out.println("   " + task);
-        System.out.println(" pls get to the remaining " + remainingTaskCount + " tasks in your list");
+        output.println(" okays here's the task i deleted: ");
+        output.println("   " + task);
+        output.println(" pls get to the remaining " + remainingTaskCount + " tasks in your list");
     }
 
     /**
@@ -124,9 +137,9 @@ public class Ui {
      * @param taskCount new number of tasks
      */
     public void showAdded(Task task, int taskCount) {
-        System.out.println(" okays task added:");
-        System.out.println("   " + task);
-        System.out.println(" you now have " + taskCount + " tasks in the list, get to it !!");
+        output.println(" okays task added:");
+        output.println("   " + task);
+        output.println(" you now have " + taskCount + " tasks in the list, get to it !!");
     }
 
     /**
@@ -135,20 +148,22 @@ public class Ui {
      * @param message explanation of the problem
      */
     public void showError(String message) {
-        System.out.println(" oopsies !! (´ ∀ ` *) " + message);
+        output.println(" oopsies !! (´ ∀ ` *) " + message);
     }
 
     /**
      * Displays the separator between command responses.
      */
     public void showDivider() {
-        System.out.println(DIVIDER);
+        output.println(DIVIDER);
     }
 
     /**
      * Releases the input scanner when Bob exits.
      */
     public void close() {
-        scanner.close();
+        if (scanner != null) {
+            scanner.close();
+        }
     }
 }
