@@ -85,17 +85,20 @@ public class Storage {
         Task task = switch (fields[0]) {
             case "T" -> {
                 requireFieldCount(fields, 3);
-                yield new Todo(requireText(fields[2]));
+                requireText(fields[2]);
+                yield new Todo(fields[2]);
             }
             case "D" -> {
                 requireFieldCount(fields, 4);
-                yield new Deadline(requireText(fields[2]), LocalDate.parse(requireText(fields[3])));
+                requireText(fields[2], fields[3]);
+                yield new Deadline(fields[2], LocalDate.parse(fields[3]));
             }
             case "E" -> {
                 requireFieldCount(fields, 5);
-                yield new Event(requireText(fields[2]),
-                        LocalDateTime.parse(requireText(fields[3]), EVENT_STORAGE_FORMAT),
-                        LocalDateTime.parse(requireText(fields[4]), EVENT_STORAGE_FORMAT));
+                requireText(fields[2], fields[3], fields[4]);
+                yield new Event(fields[2],
+                        LocalDateTime.parse(fields[3], EVENT_STORAGE_FORMAT),
+                        LocalDateTime.parse(fields[4], EVENT_STORAGE_FORMAT));
             }
             default -> throw new IllegalArgumentException("Unknown task type: " + fields[0]);
         };
@@ -155,17 +158,17 @@ public class Storage {
     }
 
     /**
-     * Validates that a required stored field contains non-whitespace text.
+     * Validates that required stored fields contain non-whitespace text.
      *
-     * @param value stored field value
-     * @return the validated value
-     * @throws IllegalArgumentException if the value is blank
+     * @param values stored field values
+     * @throws IllegalArgumentException if any value is blank
      */
-    private String requireText(String value) {
-        if (value.isBlank()) {
-            throw new IllegalArgumentException("Task fields cannot be empty");
+    private void requireText(String... values) {
+        for (String value : values) {
+            if (value.isBlank()) {
+                throw new IllegalArgumentException("Task fields cannot be empty");
+            }
         }
-        return value;
     }
 
     /**
