@@ -43,13 +43,7 @@ public class Bob {
             String input = ui.readCommand();
 
             try {
-                Command command = Parser.parse(input);
-                command.execute(tasks, ui, storage);
-                isExit = command.isExit();
-            } catch (BobException exception) {
-                ui.showError(exception.getMessage());
-            } catch (IOException exception) {
-                ui.showError("couldn't save your tasks; nothing was changed");
+                isExit = executeCommand(input, ui);
             } finally {
                 ui.showDivider();
             }

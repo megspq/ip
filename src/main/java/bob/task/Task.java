@@ -4,8 +4,8 @@ package bob.task;
  * Represents a task and whether it has been completed.
  */
 public class Task {
-    protected String description;
-    protected boolean isDone;
+    private final String description;
+    private boolean isDone;
 
     /**
      * Creates a task that is initially not done.
