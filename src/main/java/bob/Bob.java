@@ -94,6 +94,8 @@ public class Bob {
      * @return whether the command requests an exit
      */
     private boolean executeCommand(String input, Ui activeUi) {
+        // Commands must run against loaded state so startup cannot overwrite their changes.
+        assert isInitialized : "Tasks must be initialized before executing a command";
         try {
             Command command = Parser.parse(input);
             command.execute(tasks, activeUi, storage);
