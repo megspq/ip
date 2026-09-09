@@ -9,6 +9,7 @@ import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.time.format.ResolverStyle;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import bob.task.Deadline;
@@ -164,10 +165,8 @@ public class Storage {
      * @throws IllegalArgumentException if any value is blank
      */
     private void requireText(String... values) {
-        for (String value : values) {
-            if (value.isBlank()) {
-                throw new IllegalArgumentException("Task fields cannot be empty");
-            }
+        if (Arrays.stream(values).anyMatch(String::isBlank)) {
+            throw new IllegalArgumentException("Task fields cannot be empty");
         }
     }
 
