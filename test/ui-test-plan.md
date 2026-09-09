@@ -6,7 +6,7 @@ This is the source of truth for Bob's console UI tests. Cases run in order, each
 
 - **Java version:** 25 (`sdk use java 25.0.3.fx-zulu` on macOS when SDKMAN is available)
 - **Compile command:** `javac -d /private/tmp/bob-ui-test-classes $(find src/main/java -name '*.java' ! -path '*/gui/*' -print)` (compile the console application without the JavaFX GUI)
-- **Launch command:** `java -cp /private/tmp/bob-ui-test-classes bob.Bob`
+- **Launch command:** `java -ea -cp /private/tmp/bob-ui-test-classes bob.Bob` (enable internal assertion checks)
 - **Comparison:** Compare stdout exactly after normalizing line endings to LF. Prompts, spaces, and blank lines are significant.
 - **Timeout:** 10 seconds per case.
 - **Default setup:** Delete `data/bob.txt` before each case so every case starts with an empty task list. Cases that need saved tasks state their own setup instead.

@@ -60,7 +60,10 @@ public class TaskList {
         if (taskNumber < 1 || taskNumber > tasks.size()) {
             throw new BobException("task doesn't exist, whats your fav no from 1 to " + tasks.size() + "?");
         }
-        return taskNumber - 1;
+        int index = taskNumber - 1;
+        // Successful validation must produce an index that list operations can safely use.
+        assert index >= 0 && index < tasks.size() : "Validated task number must map to an existing task";
+        return index;
     }
 
     /**
@@ -129,6 +132,8 @@ public class TaskList {
      */
     public void restoreDeletedTask(int index, Task task) {
         tasks.add(index, task);
+        // Rollback must restore the same object at its original position, preserving order and state.
+        assert tasks.get(index) == task : "Deleted task must be restored at its original index";
     }
 
     /**
@@ -143,5 +148,7 @@ public class TaskList {
         } else {
             unmark(index);
         }
+        // A failed save must leave the completion state exactly as it was before the command.
+        assert tasks.get(index).isDone() == wasDone : "Rollback must restore the previous completion state";
     }
 }
