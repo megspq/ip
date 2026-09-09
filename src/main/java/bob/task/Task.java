@@ -6,6 +6,7 @@ package bob.task;
 public class Task {
     private final String description;
     private boolean isDone;
+    private final Priority priority;
 
     /**
      * Creates a task that is initially not done.
@@ -13,8 +14,37 @@ public class Task {
      * @param description description of the task
      */
     public Task(String description) {
+        this(description, Priority.NONE);
+    }
+
+    /**
+     * Creates an incomplete task with an explicit priority.
+     *
+     * @param description description of the task
+     * @param priority priority tag, or NONE for no tag
+     */
+    public Task(String description, Priority priority) {
+        this.priority = java.util.Objects.requireNonNull(priority);
         this.description = description;
         this.isDone = false;
+    }
+
+    /**
+     * Returns the task's priority, including NONE for untagged tasks.
+     *
+     * @return task priority
+     */
+    public Priority getPriority() {
+        return priority;
+    }
+
+    /**
+     * Returns an optional trailing storage field, preserving old untagged records.
+     *
+     * @return priority field or an empty string
+     */
+    protected String getStoragePriority() {
+        return priority == Priority.NONE ? "" : " | " + priority;
     }
 
     /**
@@ -95,6 +125,7 @@ public class Task {
      */
     @Override
     public String toString() {
-        return "[" + getStatusIcon() + "] " + description;
+        String tag = priority == Priority.NONE ? "" : "[priority: " + priority + "]";
+        return "[" + getStatusIcon() + "]" + tag + " " + description;
     }
 }

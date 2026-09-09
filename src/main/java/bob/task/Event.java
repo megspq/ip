@@ -22,7 +22,19 @@ public class Event extends Task {
      * @param to date and time at which the event ends
      */
     public Event(String description, LocalDateTime from, LocalDateTime to) {
-        super(description);
+        this(description, from, to, Priority.NONE);
+    }
+
+    /**
+     * Creates an incomplete task with an explicit priority.
+     *
+     * @param description description of the task
+     * @param from start time
+     * @param to end time
+     * @param priority priority tag, or NONE for no tag
+     */
+    public Event(String description, LocalDateTime from, LocalDateTime to, Priority priority) {
+        super(description, priority);
         this.from = from;
         this.to = to;
     }
@@ -35,7 +47,7 @@ public class Event extends Task {
     @Override
     public String toStorageString() {
         return "E | " + super.toStorageString() + " | "
-                + from.format(STORAGE_FORMAT) + " | " + to.format(STORAGE_FORMAT);
+                + from.format(STORAGE_FORMAT) + " | " + to.format(STORAGE_FORMAT) + getStoragePriority();
     }
 
     /**

@@ -19,7 +19,18 @@ public class Deadline extends Task {
      * @param by date by which the task should be completed
      */
     public Deadline(String description, LocalDate by) {
-        super(description);
+        this(description, by, Priority.NONE);
+    }
+
+    /**
+     * Creates an incomplete task with an explicit priority.
+     *
+     * @param description description of the task
+     * @param by due date
+     * @param priority priority tag, or NONE for no tag
+     */
+    public Deadline(String description, LocalDate by, Priority priority) {
+        super(description, priority);
         this.by = by;
     }
 
@@ -30,7 +41,7 @@ public class Deadline extends Task {
      */
     @Override
     public String toStorageString() {
-        return "D | " + super.toStorageString() + " | " + by;
+        return "D | " + super.toStorageString() + " | " + by + getStoragePriority();
     }
 
     /**

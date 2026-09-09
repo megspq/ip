@@ -10,7 +10,17 @@ public class Todo extends Task {
      * @param description description of the task
      */
     public Todo(String description) {
-        super(description);
+        this(description, Priority.NONE);
+    }
+
+    /**
+     * Creates an incomplete task with an explicit priority.
+     *
+     * @param description description of the task
+     * @param priority priority tag, or NONE for no tag
+     */
+    public Todo(String description, Priority priority) {
+        super(description, priority);
     }
 
     /**
@@ -20,7 +30,7 @@ public class Todo extends Task {
      */
     @Override
     public String toStorageString() {
-        return "T | " + super.toStorageString();
+        return "T | " + super.toStorageString() + getStoragePriority();
     }
 
     /**

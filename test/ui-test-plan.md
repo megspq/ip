@@ -697,3 +697,139 @@ ____________________________________________________________
   byebye !! have a good day (๑˃ᴗ˂)ﻭ
 ____________________________________________________________
 ```
+
+## UI-018: Add priorities to all task types
+
+**Aim:** Verify low, moderate, high, and explicit no tag appear correctly.
+
+**Inputs:**
+
+```text
+todo read /priority low
+deadline submit /by 2026-09-09 /priority moderate
+event meeting /from 2026-09-09 1400 /to 2026-09-09 1600 /priority high
+todo rest /priority none
+list
+bye
+```
+
+**Expected output:**
+
+```text
+ ____        _     
+| __ )  ___ | |__  
+|  _ \ / _ \| '_ \ 
+| |_) | (_) | |_) |
+|____/ \___/|_.__/ 
+
+hello im bob !!
+how can i help :)
+____________________________________________________________
+ okays task added:
+   [T][ ][priority: low] read
+ you now have 1 tasks in the list, get to it !!
+____________________________________________________________
+ okays task added:
+   [D][ ][priority: moderate] submit (by: Sep 09 2026)
+ you now have 2 tasks in the list, get to it !!
+____________________________________________________________
+ okays task added:
+   [E][ ][priority: high] meeting (from: Sep 09 2026, 2:00 PM to: Sep 09 2026, 4:00 PM)
+ you now have 3 tasks in the list, get to it !!
+____________________________________________________________
+ okays task added:
+   [T][ ] rest
+ you now have 4 tasks in the list, get to it !!
+____________________________________________________________
+ here are your tasks (⌒‿⌒) 加油 !! :
+ 1.[T][ ][priority: low] read
+ 2.[D][ ][priority: moderate] submit (by: Sep 09 2026)
+ 3.[E][ ][priority: high] meeting (from: Sep 09 2026, 2:00 PM to: Sep 09 2026, 4:00 PM)
+ 4.[T][ ] rest
+____________________________________________________________
+  yippee glad to have helped (＠＾◡＾)
+  byebye !! have a good day (๑˃ᴗ˂)ﻭ
+____________________________________________________________
+```
+
+## UI-019: Reject invalid priorities
+
+**Aim:** Verify missing, unknown, and duplicate priorities add no tasks.
+
+**Inputs:**
+
+```text
+todo read /priority
+todo read /priority urgent
+todo read /priority high /priority low
+list
+bye
+```
+
+**Expected output:**
+
+```text
+ ____        _     
+| __ )  ___ | |__  
+|  _ \ / _ \| '_ \ 
+| |_) | (_) | |_) |
+|____/ \___/|_.__/ 
+
+hello im bob !!
+how can i help :)
+____________________________________________________________
+ oopsies !! (´ ∀ ` *) pls end the task with /priority low, moderate, high, or none
+____________________________________________________________
+ oopsies !! (´ ∀ ` *) pls end the task with /priority low, moderate, high, or none
+____________________________________________________________
+ oopsies !! (´ ∀ ` *) pls end the task with /priority low, moderate, high, or none
+____________________________________________________________
+ here are your tasks (⌒‿⌒) 加油 !! :
+____________________________________________________________
+  yippee glad to have helped (＠＾◡＾)
+  byebye !! have a good day (๑˃ᴗ˂)ﻭ
+____________________________________________________________
+```
+
+## UI-020: Load priorities on startup
+
+**Aim:** Verify priority tags and completion states survive restarting alongside legacy untagged tasks.
+
+**Setup:** Create `data/bob.txt` with these contents:
+
+```text
+T | 1 | read | high
+D | 0 | submit | 2026-09-09 | moderate
+E | 0 | meeting | 2026-09-09 1400 | 2026-09-09 1600 | low
+T | 0 | rest
+```
+
+**Inputs:**
+
+```text
+list
+bye
+```
+
+**Expected output:**
+
+```text
+ ____        _     
+| __ )  ___ | |__  
+|  _ \ / _ \| '_ \ 
+| |_) | (_) | |_) |
+|____/ \___/|_.__/ 
+
+hello im bob !!
+how can i help :)
+____________________________________________________________
+ here are your tasks (⌒‿⌒) 加油 !! :
+ 1.[T][X][priority: high] read
+ 2.[D][ ][priority: moderate] submit (by: Sep 09 2026)
+ 3.[E][ ][priority: low] meeting (from: Sep 09 2026, 2:00 PM to: Sep 09 2026, 4:00 PM)
+ 4.[T][ ] rest
+____________________________________________________________
+  yippee glad to have helped (＠＾◡＾)
+  byebye !! have a good day (๑˃ᴗ˂)ﻭ
+____________________________________________________________
+```

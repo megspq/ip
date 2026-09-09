@@ -14,6 +14,7 @@ import java.util.List;
 
 import bob.task.Deadline;
 import bob.task.Event;
+import bob.task.Priority;
 import bob.task.Task;
 import bob.task.Todo;
 
@@ -85,21 +86,21 @@ public class Storage {
 
         Task task = switch (fields[0]) {
             case "T" -> {
-                requireFieldCount(fields, 3);
+                Priority priority = parsePriority(fields, 3);
                 requireText(fields[2]);
-                yield new Todo(fields[2]);
+                yield new Todo(fields[2], priority);
             }
             case "D" -> {
-                requireFieldCount(fields, 4);
+                Priority priority = parsePriority(fields, 4);
                 requireText(fields[2], fields[3]);
-                yield new Deadline(fields[2], LocalDate.parse(fields[3]));
+                yield new Deadline(fields[2], LocalDate.parse(fields[3]), priority);
             }
             case "E" -> {
-                requireFieldCount(fields, 5);
+                Priority priority = parsePriority(fields, 5);
                 requireText(fields[2], fields[3], fields[4]);
                 yield new Event(fields[2],
                         LocalDateTime.parse(fields[3], EVENT_STORAGE_FORMAT),
-                        LocalDateTime.parse(fields[4], EVENT_STORAGE_FORMAT));
+                        LocalDateTime.parse(fields[4], EVENT_STORAGE_FORMAT), priority);
             }
             default -> throw new IllegalArgumentException("Unknown task type: " + fields[0]);
         };
@@ -146,16 +147,21 @@ public class Storage {
     }
 
     /**
-     * Validates that a stored task record contains the required number of fields.
+     * Reads an optional priority field while accepting legacy records.
      *
      * @param fields fields in the stored task record
      * @param expectedCount required field count
-     * @throws IllegalArgumentException if the field count differs
+     * @return stored priority or NONE for a legacy record
+     * @throws IllegalArgumentException if the field count or priority is invalid
      */
-    private void requireFieldCount(String[] fields, int expectedCount) {
-        if (fields.length != expectedCount) {
+    private Priority parsePriority(String[] fields, int expectedCount) {
+        if (fields.length == expectedCount) {
+            return Priority.NONE;
+        }
+        if (fields.length != expectedCount + 1) {
             throw new IllegalArgumentException("Wrong number of fields");
         }
+        return Priority.fromLabel(fields[expectedCount]);
     }
 
     /**

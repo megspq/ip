@@ -23,3 +23,20 @@ Prerequisites: JDK 25, update Intellij to the most recent version.
    ```
 
 **Warning:** Keep the `src\main\java` folder as the root folder for Java files (i.e., don't rename those folders or move Java files to another folder outside of this folder path), as this is the default location some tools (e.g., Gradle) expect to find Java files.
+
+
+## Task priorities
+
+Append `/priority low`, `/priority moderate`, or `/priority high` to an add command:
+
+```text
+todo read book /priority low
+deadline submit report /by 2026-09-09 /priority high
+event meeting /from 2026-09-09 1400 /to 2026-09-09 1600 /priority moderate
+```
+
+Omit the field or use `/priority none` for no tag. The field must come last,
+appear only once, and use a lowercase value. Tagged tasks display, for example,
+`[T][ ][priority: low] read book`. Priorities are saved across restarts; existing
+saved tasks remain untagged. Task order and description-based search are unchanged.
+Priorities are assigned when adding tasks.

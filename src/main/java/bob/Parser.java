@@ -16,6 +16,8 @@ import bob.command.MarkCommand;
 import bob.command.UnmarkCommand;
 import bob.task.Deadline;
 import bob.task.Event;
+import bob.task.Priority;
+import bob.task.Task;
 import bob.task.Todo;
 
 /**
@@ -51,14 +53,44 @@ public class Parser {
         } else if (input.equals("delete") || input.startsWith("delete ")) {
             return new DeleteCommand(parseTaskNumber(input, "delete"));
         } else if (input.equals("todo") || input.startsWith("todo ")) {
-            return new AddCommand(parseTodo(input));
+            return parseAdd(input, "todo");
         } else if (input.equals("deadline") || input.startsWith("deadline ")) {
-            return new AddCommand(parseDeadline(input));
+            return parseAdd(input, "deadline");
         } else if (input.equals("event") || input.startsWith("event ")) {
-            return new AddCommand(parseEvent(input));
+            return parseAdd(input, "event");
         }
         throw new BobException(
                 "pls try either one of list, find, todo, deadline, event, mark, unmark, delete, or bye");
+    }
+
+    /**
+     * Removes an optional final priority field before parsing existing task details.
+     *
+     * @param input complete user input
+     * @param type task command word
+     * @return command containing the prioritized task
+     * @throws BobException if task details or priority are invalid
+     */
+    private static AddCommand parseAdd(String input, String type) throws BobException {
+        Priority priority = Priority.NONE;
+        java.util.regex.Matcher marker = java.util.regex.Pattern.compile(" /priority(?=\\s|$)")
+                .matcher(input);
+        if (marker.find()) {
+            String label = input.substring(marker.end()).trim();
+            try {
+                priority = Priority.fromLabel(label);
+            } catch (IllegalArgumentException exception) {
+                throw new BobException("pls end the task with /priority low, moderate, high, or none");
+            }
+            input = input.substring(0, marker.start()).trim();
+        }
+        Task task = switch (type) {
+            case "todo" -> parseTodo(input, priority);
+            case "deadline" -> parseDeadline(input, priority);
+            case "event" -> parseEvent(input, priority);
+            default -> throw new IllegalArgumentException("Unknown task type: " + type);
+        };
+        return new AddCommand(task);
     }
 
     /**
@@ -102,23 +134,25 @@ public class Parser {
      * Parses a to-do command and requires a non-empty description.
      *
      * @param input complete user input
+     * @param priority task priority
      * @return to-do task described by the input
      * @throws BobException if the description is empty
      */
-    private static Todo parseTodo(String input) throws BobException {
+    private static Todo parseTodo(String input, Priority priority) throws BobException {
         String description = input.substring("todo".length()).trim();
         requireNotEmpty(description, "oopsies a todo needs a desc, eg: todo sleep");
-        return new Todo(description);
+        return new Todo(description, priority);
     }
 
     /**
      * Parses a deadline command containing a description and ISO date.
      *
      * @param input complete user input
+     * @param priority task priority
      * @return deadline task described by the input
      * @throws BobException if required fields are missing or the date is invalid
      */
-    private static Deadline parseDeadline(String input) throws BobException {
+    private static Deadline parseDeadline(String input, Priority priority) throws BobException {
         int byPosition = input.indexOf(" /by");
         if (byPosition == -1) {
             throw new BobException("a deadline needs /by and a date, eg play /by 2019-12-02");
@@ -128,7 +162,7 @@ public class Parser {
         requireNotEmpty(description, "pls give a desc before /by.");
         requireNotEmpty(by, "pls give a date after /by.");
         try {
-            return new Deadline(description, LocalDate.parse(by));
+            return new Deadline(description, LocalDate.parse(by), priority);
         } catch (DateTimeParseException exception) {
             throw new BobException("use yyyy-MM-dd for deadline dates, eg 2019-12-02");
         }
@@ -138,11 +172,12 @@ public class Parser {
      * Parses an event command containing a description, start, and end time.
      *
      * @param input complete user input
+     * @param priority task priority
      * @return event task described by the input
      * @throws BobException if required fields are missing, a date-time is invalid,
      *         or the event ends before it starts
      */
-    private static Event parseEvent(String input) throws BobException {
+    private static Event parseEvent(String input, Priority priority) throws BobException {
         int fromPosition = input.indexOf(" /from");
         int toPosition = input.indexOf(" /to");
         if (fromPosition == -1 || toPosition == -1 || toPosition < fromPosition) {
@@ -161,7 +196,7 @@ public class Parser {
             if (end.isBefore(start)) {
                 throw new BobException("an event's end cannot be before its start");
             }
-            return new Event(description, start, end);
+            return new Event(description, start, end, priority);
         } catch (DateTimeParseException exception) {
             throw new BobException("use yyyy-MM-dd HHmm for event dates and times, eg 2019-12-02 1800");
         }
