@@ -43,13 +43,7 @@ public class Bob {
             String input = ui.readCommand();
 
             try {
-                Command command = Parser.parse(input);
-                command.execute(tasks, ui, storage);
-                isExit = command.isExit();
-            } catch (BobException exception) {
-                ui.showError(exception.getMessage());
-            } catch (IOException exception) {
-                ui.showError("couldn't save your tasks; nothing was changed");
+                isExit = executeCommand(input, ui);
             } finally {
                 ui.showDivider();
             }
@@ -94,6 +88,8 @@ public class Bob {
      * @return whether the command requests an exit
      */
     private boolean executeCommand(String input, Ui activeUi) {
+        // Commands must run against loaded state so startup cannot overwrite their changes.
+        assert isInitialized : "Tasks must be initialized before executing a command";
         try {
             Command command = Parser.parse(input);
             command.execute(tasks, activeUi, storage);

@@ -36,6 +36,9 @@ public class AddCommand extends Command {
         try {
             storage.save(tasks.asList());
         } catch (IOException exception) {
+            // Addition rollback assumes no intervening operation has moved or replaced the appended task.
+            assert tasks.size() > 0 && tasks.get(tasks.size() - 1) == task
+                    : "The last task must be the task being rolled back";
             tasks.delete(tasks.size() - 1);
             throw exception;
         }
