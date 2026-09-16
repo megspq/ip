@@ -8,7 +8,7 @@ Bob is a desktop chatbot for managing tasks using simple typed commands.
 
 Type a command in the text box and press **Enter** or click **send**. Bob automatically saves task changes between sessions.
 
-Use lowercase command words and single spaces, with no spaces at the start or end. Replace the uppercase placeholders below with your own details. For `TASK_NUMBER`, use the number shown by `list` (starting at 1), even after a search.
+Use lowercase command words and single spaces, with no spaces at the start or end. Replace the uppercase placeholders below with your own details. For `TASK_NUMBER`, use the number shown by `list` or `find` (starting at 1); numbers can change after deleting a task.
 
 ## Features
 
@@ -60,7 +60,7 @@ Deletes a task.
 
 ### Find tasks
 
-Finds tasks whose descriptions contain the given text (case-sensitive).
+Finds tasks whose descriptions contain the given text (case-sensitive), keeping their full-list task numbers.
 
 **Command:** `find KEYWORD`
 

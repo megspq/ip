@@ -87,14 +87,16 @@ public class Ui {
     }
 
     /**
-     * Displays tasks whose descriptions match a search keyword.
+     * Displays matching tasks using their numbers in the full task list.
      *
-     * @param tasks matching tasks to display
+     * @param matchingTasks matching tasks to display
+     * @param allTasks full task list used by mark, unmark, and delete commands
      */
-    public void showFoundTasks(List<Task> tasks) {
+    public void showFoundTasks(List<Task> matchingTasks, List<Task> allTasks) {
         output.println(" here's what i found:");
-        for (int i = 0; i < tasks.size(); i++) {
-            output.println(" " + (i + 1) + "." + tasks.get(i));
+        for (Task task : matchingTasks) {
+            int taskNumber = allTasks.indexOf(task) + 1;
+            output.println(" " + taskNumber + "." + task);
         }
     }
 

@@ -973,3 +973,70 @@ ____________________________________________________________
   byebye !! have a good day (๑˃ᴗ˂)ﻭ
 ____________________________________________________________
 ```
+
+## UI-024: Use full-list numbers from search results
+
+**Aim:** Verify nonconsecutive search results retain full-list numbers for marking, unmarking, and deleting, and refresh those numbers after deletion; an unmatched search shows no tasks.
+
+**Setup:** Create `data/bob.txt` with these contents:
+
+```text
+T | 0 | buy milk
+T | 0 | read book
+T | 0 | buy pen
+T | 0 | return book
+```
+
+**Inputs:**
+
+```text
+find book
+mark 2
+unmark 2
+delete 2
+find book
+find missing
+list
+bye
+```
+
+**Expected output:**
+
+```text
+ ____        _     
+| __ )  ___ | |__  
+|  _ \ / _ \| '_ \ 
+| |_) | (_) | |_) |
+|____/ \___/|_.__/ 
+
+hello im bob !!
+how can i help :)
+____________________________________________________________
+ here's what i found:
+ 2.[T][ ] read book
+ 4.[T][ ] return book
+____________________________________________________________
+ yippee task done, i've marked it as so:
+   [T][X] read book
+____________________________________________________________
+ okie, i've marked this task incomplete:
+   [T][ ] read book
+____________________________________________________________
+ okays here's the task i deleted: 
+   [T][ ] read book
+ pls get to the remaining 3 tasks in your list
+____________________________________________________________
+ here's what i found:
+ 3.[T][ ] return book
+____________________________________________________________
+ here's what i found:
+____________________________________________________________
+ here are your tasks (⌒‿⌒) 加油 !! :
+ 1.[T][ ] buy milk
+ 2.[T][ ] buy pen
+ 3.[T][ ] return book
+____________________________________________________________
+  yippee glad to have helped (＠＾◡＾)
+  byebye !! have a good day (๑˃ᴗ˂)ﻭ
+____________________________________________________________
+```
