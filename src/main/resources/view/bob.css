@@ -29,12 +29,21 @@
 }
 
 #dialog.bob-bubble {
-    -fx-background-color: #ffe6f1;
+    -fx-background-color: #e4f2ff;
+    -fx-border-color: #6b9cc6;
+    -fx-border-style: segments(8, 8) line-cap round;
+}
+
+#dialog.error-bubble {
+    -fx-background-color: #ffe1e5;
+    -fx-border-color: #df7295;
+    -fx-border-style: solid;
 }
 
 #userInput {
     -fx-background-color: #fff3f9;
     -fx-font-size: 15px;
+    -fx-prompt-text-fill: #777777;
 }
 
 #sendButton {

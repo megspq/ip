@@ -8,11 +8,13 @@ import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.geometry.Pos;
+import javafx.geometry.Rectangle2D;
 import javafx.scene.Node;
 import javafx.scene.control.Label;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.HBox;
+import javafx.scene.shape.Rectangle;
 
 /**
  * Displays one chat message together with its speaker's picture.
@@ -71,11 +73,21 @@ public class DialogBox extends HBox {
      *
      * @param text Bob's response
      * @param image Bob's display picture
+     * @param isError whether Bob's response contains an error
      * @return dialog ready to add to the chat
      */
-    public static DialogBox getBobDialog(String text, Image image) {
+    public static DialogBox getBobDialog(String text, Image image, boolean isError) {
         DialogBox dialogBox = new DialogBox(text, image);
-        dialogBox.dialog.getStyleClass().add("bob-bubble");
+        dialogBox.dialog.getStyleClass().add(isError ? "error-bubble" : "bob-bubble");
+        if (isError) {
+            // Crop the dark frame in the supplied error image and mask its remaining corners.
+            dialogBox.displayPicture.setViewport(new Rectangle2D(45, 35,
+                    image.getWidth() - 90, image.getHeight() - 70));
+            Rectangle roundedCrop = new Rectangle(99, 99);
+            roundedCrop.setArcWidth(18);
+            roundedCrop.setArcHeight(18);
+            dialogBox.displayPicture.setClip(roundedCrop);
+        }
         dialogBox.flip();
         return dialogBox;
     }

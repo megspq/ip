@@ -15,6 +15,7 @@ import javafx.scene.layout.VBox;
 public class MainWindow extends AnchorPane {
     private final Image userImage = new Image(getClass().getResourceAsStream("/images/DaUser.png"));
     private final Image bobImage = new Image(getClass().getResourceAsStream("/images/DaBob.png"));
+    private final Image bobErrorImage = new Image(getClass().getResourceAsStream("/images/BobError.png"));
 
     @FXML
     private ScrollPane scrollPane;
@@ -51,9 +52,10 @@ public class MainWindow extends AnchorPane {
     private void handleUserInput() {
         String input = userInput.getText();
         String response = bob.getResponse(input);
+        boolean isError = response.lines().anyMatch(line -> line.startsWith(" oopsies !!"));
         dialogContainer.getChildren().addAll(
                 DialogBox.getUserDialog(input, userImage),
-                DialogBox.getBobDialog(response, bobImage));
+                DialogBox.getBobDialog(response, isError ? bobErrorImage : bobImage, isError));
         userInput.clear();
     }
 }
