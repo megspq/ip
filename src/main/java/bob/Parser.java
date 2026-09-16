@@ -40,6 +40,12 @@ public class Parser {
      * @throws BobException if the command or any of its arguments is invalid
      */
     public static Command parse(String input) throws BobException {
+        if (input.endsWith(" /priority ")) {
+            throw new BobException("pls end the task with /priority low, moderate, high, or none");
+        }
+        if (!input.equals(input.strip()) || input.contains("  ") || input.contains("\t")) {
+            throw new BobException("use single spaces and no spaces at the start or end of a command");
+        }
         if (input.equals("bye")) {
             return new ExitCommand();
         } else if (input.equals("list")) {
@@ -104,6 +110,9 @@ public class Parser {
     private static String parseKeyword(String input) throws BobException {
         String keyword = input.substring("find".length()).trim();
         requireNotEmpty(keyword, "pls give a keyword to find");
+        if (keyword.startsWith("/")) {
+            throw new BobException("pls give a keyword to find");
+        }
         return keyword;
     }
 
@@ -122,6 +131,9 @@ public class Parser {
         }
 
         final int taskNumber;
+        if (!numberText.matches("[0-9]+")) {
+            throw new BobException("enter a valid task no pls");
+        }
         try {
             taskNumber = Integer.parseInt(numberText);
         } catch (NumberFormatException exception) {
@@ -159,6 +171,10 @@ public class Parser {
         }
         String description = input.substring("deadline".length(), byPosition).trim();
         String by = input.substring(byPosition + " /by".length()).trim();
+        if (by.contains("/by") || description.contains("/by") || description.contains("/from")
+                || description.contains("/to")) {
+            throw new BobException("use /by exactly once after the deadline description");
+        }
         requireNotEmpty(description, "pls give a desc before /by.");
         requireNotEmpty(by, "pls give a date after /by.");
         try {
@@ -187,14 +203,18 @@ public class Parser {
         String description = input.substring("event".length(), fromPosition).trim();
         String from = input.substring(fromPosition + " /from".length(), toPosition).trim();
         String to = input.substring(toPosition + " /to".length()).trim();
+        if (description.contains("/from") || description.contains("/to") || from.contains("/from")
+                || from.contains("/to") || to.contains("/from") || to.contains("/to")) {
+            throw new BobException("use /from and /to exactly once in that order");
+        }
         requireNotEmpty(description, "pls gimme event desc before /from.");
         requireNotEmpty(from, "pls gimme start time after /from.");
         requireNotEmpty(to, "pls gimme end time after /to.");
         try {
             LocalDateTime start = LocalDateTime.parse(from, EVENT_INPUT_FORMAT);
             LocalDateTime end = LocalDateTime.parse(to, EVENT_INPUT_FORMAT);
-            if (end.isBefore(start)) {
-                throw new BobException("an event's end cannot be before its start");
+            if (!end.isAfter(start)) {
+                throw new BobException("an event's end must be after its start");
             }
             return new Event(description, start, end, priority);
         } catch (DateTimeParseException exception) {

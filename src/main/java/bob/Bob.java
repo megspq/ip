@@ -6,7 +6,11 @@ import java.io.PrintStream;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Path;
 
+import bob.command.AddCommand;
 import bob.command.Command;
+import bob.command.DeleteCommand;
+import bob.command.MarkCommand;
+import bob.command.UnmarkCommand;
 import bob.task.TaskList;
 
 /**
@@ -16,6 +20,7 @@ public class Bob {
     private final Storage storage;
     private final Ui ui;
     private boolean isInitialized;
+    private boolean isStorageReadable = true;
     private TaskList tasks;
 
     /**
@@ -62,7 +67,7 @@ public class Bob {
         try (PrintStream responseStream = new PrintStream(responseBytes, true, StandardCharsets.UTF_8)) {
             Ui responseUi = new Ui(responseStream);
             initialize(responseUi);
-            executeCommand(input.trim(), responseUi);
+            executeCommand(input, responseUi);
         }
         return responseBytes.toString(StandardCharsets.UTF_8).stripTrailing();
     }
@@ -92,6 +97,10 @@ public class Bob {
         assert isInitialized : "Tasks must be initialized before executing a command";
         try {
             Command command = Parser.parse(input);
+            if (!isStorageReadable && (command instanceof AddCommand || command instanceof DeleteCommand
+                    || command instanceof MarkCommand || command instanceof UnmarkCommand)) {
+                throw new BobException("saved tasks could not be loaded; fix the data file before changing tasks");
+            }
             command.execute(tasks, activeUi, storage);
             return command.isExit();
         } catch (BobException exception) {
@@ -109,6 +118,7 @@ public class Bob {
         try {
             return new TaskList(storage.load());
         } catch (StorageException exception) {
+            isStorageReadable = false;
             activeUi.showError("couldn't load saved tasks: " + exception.getMessage());
             if (activeUi == ui) {
                 activeUi.showDivider();

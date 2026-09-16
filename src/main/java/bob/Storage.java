@@ -62,7 +62,11 @@ public class Storage {
                 continue;
             }
             try {
-                tasks.add(parseTask(line));
+                Task task = parseTask(line);
+                if (new bob.task.TaskList(tasks).containsDetails(task)) {
+                    throw new IllegalArgumentException("Duplicate task");
+                }
+                tasks.add(task);
             } catch (IllegalArgumentException exception) {
                 throw new StorageException("invalid data on line " + (i + 1), exception);
             }
@@ -98,9 +102,12 @@ public class Storage {
             case "E" -> {
                 Priority priority = parsePriority(fields, 5);
                 requireText(fields[2], fields[3], fields[4]);
-                yield new Event(fields[2],
-                        LocalDateTime.parse(fields[3], EVENT_STORAGE_FORMAT),
-                        LocalDateTime.parse(fields[4], EVENT_STORAGE_FORMAT), priority);
+                LocalDateTime start = LocalDateTime.parse(fields[3], EVENT_STORAGE_FORMAT);
+                LocalDateTime end = LocalDateTime.parse(fields[4], EVENT_STORAGE_FORMAT);
+                if (!end.isAfter(start)) {
+                    throw new IllegalArgumentException("Event must end after it starts");
+                }
+                yield new Event(fields[2], start, end, priority);
             }
             default -> throw new IllegalArgumentException("Unknown task type: " + fields[0]);
         };

@@ -555,7 +555,7 @@ ____________________________________________________________
 ____________________________________________________________
  oopsies !! (´ ∀ ` *) pls gimme event desc before /from.
 ____________________________________________________________
- oopsies !! (´ ∀ ` *) pls gimme start time after /from.
+ oopsies !! (´ ∀ ` *) use single spaces and no spaces at the start or end of a command
 ____________________________________________________________
  oopsies !! (´ ∀ ` *) pls gimme end time after /to.
 ____________________________________________________________
@@ -640,7 +640,7 @@ ____________________________________________________________
 ____________________________________________________________
  oopsies !! (´ ∀ ` *) use yyyy-MM-dd HHmm for event dates and times, eg 2019-12-02 1800
 ____________________________________________________________
- oopsies !! (´ ∀ ` *) an event's end cannot be before its start
+ oopsies !! (´ ∀ ` *) an event's end must be after its start
 ____________________________________________________________
   yippee glad to have helped (＠＾◡＾)
   byebye !! have a good day (๑˃ᴗ˂)ﻭ
@@ -828,6 +828,102 @@ ____________________________________________________________
  2.[D][ ][priority: moderate] submit (by: Sep 09 2026)
  3.[E][ ][priority: low] meeting (from: Sep 09 2026, 2:00 PM to: Sep 09 2026, 4:00 PM)
  4.[T][ ] rest
+____________________________________________________________
+  yippee glad to have helped (＠＾◡＾)
+  byebye !! have a good day (๑˃ᴗ˂)ﻭ
+____________________________________________________________
+```
+
+## UI-021: Reject malformed commands and duplicate tasks
+
+**Aim:** Reject malformed commands and duplicate tasks.
+
+**Inputs:**
+
+```text
+  todo read
+todo read  book
+todo read
+todo read
+deadline return /by 2026-02-30
+event meeting /from 2026-09-16 1400 /to 2026-09-16 1400
+deadline return /by 2026-09-16 /by 2026-09-17
+list
+bye
+```
+
+**Expected output:**
+
+```text
+ ____        _     
+| __ )  ___ | |__  
+|  _ \ / _ \| '_ \ 
+| |_) | (_) | |_) |
+|____/ \___/|_.__/ 
+
+hello im bob !!
+how can i help :)
+____________________________________________________________
+ okays task added:
+   [T][ ] read
+ you now have 1 tasks in the list, get to it !!
+____________________________________________________________
+ oopsies !! (´ ∀ ` *) use single spaces and no spaces at the start or end of a command
+____________________________________________________________
+ oopsies !! (´ ∀ ` *) that task is already in the list
+____________________________________________________________
+ oopsies !! (´ ∀ ` *) that task is already in the list
+____________________________________________________________
+ oopsies !! (´ ∀ ` *) use yyyy-MM-dd for deadline dates, eg 2019-12-02
+____________________________________________________________
+ oopsies !! (´ ∀ ` *) an event's end must be after its start
+____________________________________________________________
+ oopsies !! (´ ∀ ` *) use /by exactly once after the deadline description
+____________________________________________________________
+ here are your tasks (⌒‿⌒) 加油 !! :
+ 1.[T][ ] read
+____________________________________________________________
+  yippee glad to have helped (＠＾◡＾)
+  byebye !! have a good day (๑˃ᴗ˂)ﻭ
+____________________________________________________________
+```
+
+## UI-022: Reject duplicate saved tasks and prevent overwriting them
+
+**Aim:** Reject duplicate saved tasks and prevent overwriting them.
+
+**Setup:** Create `data/bob.txt` with these contents:
+
+```text
+T | 0 | read
+T | 1 | read
+```
+
+**Inputs:**
+
+```text
+todo new
+list
+bye
+```
+
+**Expected output:**
+
+```text
+ ____        _     
+| __ )  ___ | |__  
+|  _ \ / _ \| '_ \ 
+| |_) | (_) | |_) |
+|____/ \___/|_.__/ 
+
+hello im bob !!
+how can i help :)
+____________________________________________________________
+ oopsies !! (´ ∀ ` *) couldn't load saved tasks: invalid data on line 2
+____________________________________________________________
+ oopsies !! (´ ∀ ` *) saved tasks could not be loaded; fix the data file before changing tasks
+____________________________________________________________
+ here are your tasks (⌒‿⌒) 加油 !! :
 ____________________________________________________________
   yippee glad to have helped (＠＾◡＾)
   byebye !! have a good day (๑˃ᴗ˂)ﻭ

@@ -76,6 +76,19 @@ public class TaskList {
     }
 
     /**
+     * Checks whether a task with the same type, description, dates, and priority exists.
+     * Completion state does not distinguish task details.
+     *
+     * @param candidate task to check
+     * @return whether the task is already present
+     */
+    public boolean containsDetails(Task candidate) {
+        String candidateDetails = candidate.toStorageString().replaceFirst("^([TDE] \\| )[01]", "$10");
+        return tasks.stream().anyMatch(task -> task.toStorageString()
+                .replaceFirst("^([TDE] \\| )[01]", "$10").equals(candidateDetails));
+    }
+
+    /**
      * Deletes and returns the task at a zero-based index.
      *
      * @param index index of the task to delete
