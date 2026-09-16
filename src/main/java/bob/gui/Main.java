@@ -26,6 +26,7 @@ public class Main extends Application {
         FXMLLoader fxmlLoader = new FXMLLoader(Main.class.getResource("/view/MainWindow.fxml"));
         AnchorPane mainWindow = fxmlLoader.load();
         Scene scene = new Scene(mainWindow);
+        scene.getStylesheets().add(Main.class.getResource("/view/bob.css").toExternalForm());
         stage.setScene(scene);
         stage.setTitle("Bob");
         fxmlLoader.<MainWindow>getController().setBob(bob);

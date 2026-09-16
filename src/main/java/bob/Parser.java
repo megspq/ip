@@ -109,9 +109,9 @@ public class Parser {
 
     private static String parseKeyword(String input) throws BobException {
         String keyword = input.substring("find".length()).trim();
-        requireNotEmpty(keyword, "pls give a keyword to find");
+        requireNotEmpty(keyword, "can't find something if idk what it is");
         if (keyword.startsWith("/")) {
-            throw new BobException("pls give a keyword to find");
+            throw new BobException("can't find something if idk what it is");
         }
         return keyword;
     }
@@ -152,7 +152,7 @@ public class Parser {
      */
     private static Todo parseTodo(String input, Priority priority) throws BobException {
         String description = input.substring("todo".length()).trim();
-        requireNotEmpty(description, "oopsies a todo needs a desc, eg: todo sleep");
+        requireNotEmpty(description, "a todo needs a desc, eg: todo sleep");
         return new Todo(description, priority);
     }
 
@@ -173,14 +173,14 @@ public class Parser {
         String by = input.substring(byPosition + " /by".length()).trim();
         if (by.contains("/by") || description.contains("/by") || description.contains("/from")
                 || description.contains("/to")) {
-            throw new BobException("use /by exactly once after the deadline description");
+            throw new BobException("use /by exactly once after the deadline desc");
         }
-        requireNotEmpty(description, "pls give a desc before /by.");
-        requireNotEmpty(by, "pls give a date after /by.");
+        requireNotEmpty(description, "pls gimme a desc before /by");
+        requireNotEmpty(by, "pls gimme a date after /by");
         try {
             return new Deadline(description, LocalDate.parse(by), priority);
         } catch (DateTimeParseException exception) {
-            throw new BobException("use yyyy-MM-dd for deadline dates, eg 2019-12-02");
+            throw new BobException("wrong format for date !! here’s an eg: 2019-12-02");
         }
     }
 
@@ -214,11 +214,11 @@ public class Parser {
             LocalDateTime start = LocalDateTime.parse(from, EVENT_INPUT_FORMAT);
             LocalDateTime end = LocalDateTime.parse(to, EVENT_INPUT_FORMAT);
             if (!end.isAfter(start)) {
-                throw new BobException("an event's end must be after its start");
+                throw new BobException("how can an event end before it starts?");
             }
             return new Event(description, start, end, priority);
         } catch (DateTimeParseException exception) {
-            throw new BobException("use yyyy-MM-dd HHmm for event dates and times, eg 2019-12-02 1800");
+            throw new BobException("wrong format !! here’s an eg: 2019-12-02 1800");
         }
     }
 

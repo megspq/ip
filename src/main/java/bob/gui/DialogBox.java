@@ -61,7 +61,9 @@ public class DialogBox extends HBox {
      * @return dialog ready to add to the chat
      */
     public static DialogBox getUserDialog(String text, Image image) {
-        return new DialogBox(text, image);
+        DialogBox dialogBox = new DialogBox(text, image);
+        dialogBox.dialog.getStyleClass().add("user-bubble");
+        return dialogBox;
     }
 
     /**
@@ -73,6 +75,7 @@ public class DialogBox extends HBox {
      */
     public static DialogBox getBobDialog(String text, Image image) {
         DialogBox dialogBox = new DialogBox(text, image);
+        dialogBox.dialog.getStyleClass().add("bob-bubble");
         dialogBox.flip();
         return dialogBox;
     }

@@ -521,7 +521,7 @@ ____________________________________________________________
 
 ## UI-009: Reject empty task details
 
-**Aim:** Verify that task commands reject missing descriptions and date or time fields with specific guidance.
+**Aim:** Verify that task commands and `find` reject missing required details with specific guidance.
 
 **Inputs:**
 
@@ -532,6 +532,7 @@ deadline return book /by
 event /from 2pm /to 4pm
 event meeting /from  /to 4pm
 event meeting /from 2pm /to
+find
 bye
 ```
 
@@ -547,17 +548,19 @@ bye
 hello im bob !!
 how can i help :)
 ____________________________________________________________
- oopsies !! (´ ∀ ` *) oopsies a todo needs a desc, eg: todo sleep
+ oopsies !! (´ ∀ ` *) a todo needs a desc, eg: todo sleep
 ____________________________________________________________
- oopsies !! (´ ∀ ` *) pls give a desc before /by.
+ oopsies !! (´ ∀ ` *) pls gimme a desc before /by
 ____________________________________________________________
- oopsies !! (´ ∀ ` *) pls give a date after /by.
+ oopsies !! (´ ∀ ` *) pls gimme a date after /by
 ____________________________________________________________
  oopsies !! (´ ∀ ` *) pls gimme event desc before /from.
 ____________________________________________________________
  oopsies !! (´ ∀ ` *) use single spaces and no spaces at the start or end of a command
 ____________________________________________________________
  oopsies !! (´ ∀ ` *) pls gimme end time after /to.
+____________________________________________________________
+ oopsies !! (´ ∀ ` *) can't find something if idk what it is
 ____________________________________________________________
   yippee glad to have helped (＠＾◡＾)
   byebye !! have a good day (๑˃ᴗ˂)ﻭ
@@ -636,11 +639,11 @@ bye
 hello im bob !!
 how can i help :)
 ____________________________________________________________
- oopsies !! (´ ∀ ` *) use yyyy-MM-dd for deadline dates, eg 2019-12-02
+ oopsies !! (´ ∀ ` *) wrong format for date !! here’s an eg: 2019-12-02
 ____________________________________________________________
- oopsies !! (´ ∀ ` *) use yyyy-MM-dd HHmm for event dates and times, eg 2019-12-02 1800
+ oopsies !! (´ ∀ ` *) wrong format !! here’s an eg: 2019-12-02 1800
 ____________________________________________________________
- oopsies !! (´ ∀ ` *) an event's end must be after its start
+ oopsies !! (´ ∀ ` *) how can an event end before it starts?
 ____________________________________________________________
   yippee glad to have helped (＠＾◡＾)
   byebye !! have a good day (๑˃ᴗ˂)ﻭ
@@ -874,11 +877,11 @@ ____________________________________________________________
 ____________________________________________________________
  oopsies !! (´ ∀ ` *) that task is already in the list
 ____________________________________________________________
- oopsies !! (´ ∀ ` *) use yyyy-MM-dd for deadline dates, eg 2019-12-02
+ oopsies !! (´ ∀ ` *) wrong format for date !! here’s an eg: 2019-12-02
 ____________________________________________________________
- oopsies !! (´ ∀ ` *) an event's end must be after its start
+ oopsies !! (´ ∀ ` *) how can an event end before it starts?
 ____________________________________________________________
- oopsies !! (´ ∀ ` *) use /by exactly once after the deadline description
+ oopsies !! (´ ∀ ` *) use /by exactly once after the deadline desc
 ____________________________________________________________
  here are your tasks (⌒‿⌒) 加油 !! :
  1.[T][ ] read
