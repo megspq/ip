@@ -1,5 +1,4 @@
 T | 0 | play
-D | 1 | sleep | 2026-09-16
+D | 0 | sleep | 2026-09-16
 T | 0 | have fun | high
 T | 0 | sleep
-T | 0 | eat
