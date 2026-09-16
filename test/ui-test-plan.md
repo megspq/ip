@@ -932,3 +932,44 @@ ____________________________________________________________
   byebye !! have a good day (๑˃ᴗ˂)ﻭ
 ____________________________________________________________
 ```
+
+## UI-023: Reject an incomplete saved task record
+
+**Aim:** Verify that a saved record missing its description reports a data error without crashing or overwriting the file.
+
+**Setup:** Create `data/bob.txt` with these contents:
+
+```text
+T | 0
+```
+
+**Inputs:**
+
+```text
+todo new
+list
+bye
+```
+
+**Expected output:**
+
+```text
+ ____        _     
+| __ )  ___ | |__  
+|  _ \ / _ \| '_ \ 
+| |_) | (_) | |_) |
+|____/ \___/|_.__/ 
+
+hello im bob !!
+how can i help :)
+____________________________________________________________
+ oopsies !! (´ ∀ ` *) couldn't load saved tasks: invalid data on line 1
+____________________________________________________________
+ oopsies !! (´ ∀ ` *) saved tasks could not be loaded; fix the data file before changing tasks
+____________________________________________________________
+ here are your tasks (⌒‿⌒) 加油 !! :
+____________________________________________________________
+  yippee glad to have helped (＠＾◡＾)
+  byebye !! have a good day (๑˃ᴗ˂)ﻭ
+____________________________________________________________
+```

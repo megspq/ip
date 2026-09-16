@@ -84,7 +84,7 @@ public class Storage {
     private Task parseTask(String line) {
         List<String> fieldList = splitFields(line);
         String[] fields = fieldList.toArray(String[]::new);
-        if (fields.length < 2 || (!fields[1].equals("0") && !fields[1].equals("1"))) {
+        if (fields.length < 3 || (!fields[1].equals("0") && !fields[1].equals("1"))) {
             throw new IllegalArgumentException("Invalid completion status");
         }
 
