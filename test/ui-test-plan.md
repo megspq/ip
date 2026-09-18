@@ -616,13 +616,17 @@ ____________________________________________________________
 
 ## UI-016: Reject invalid dates and times
 
-**Aim:** Verify that typed date fields reject invalid formats and that an event cannot end before it starts.
+**Aim:** Distinguish malformed dates and times from nonexistent dates and times, and reject an event that ends before it starts.
 
 **Inputs:**
 
 ```text
 deadline return book /by 2/12/2019
+deadline return book /by 2026-02-30
 event meeting /from 2019-12-02 2pm /to 2019-12-02 1600
+event meeting /from 2026-02-30 1400 /to 2026-03-01 1600
+event meeting /from 2026-02-28 3300 /to 2026-03-01 1600
+event meeting /from 2026-02-28 1400 /to 2026-03-01 3300
 event meeting /from 2019-12-02 1800 /to 2019-12-02 1600
 bye
 ```
@@ -641,7 +645,15 @@ how can i help :)
 ____________________________________________________________
  oopsies !! (´ ∀ ` *) wrong format for date !! here’s an eg: 2019-12-02
 ____________________________________________________________
+ oopsies !! (´ ∀ ` *) date doesn't exist, try again
+____________________________________________________________
  oopsies !! (´ ∀ ` *) wrong format !! here’s an eg: 2019-12-02 1800
+____________________________________________________________
+ oopsies !! (´ ∀ ` *) date or time doesn't exist, try again
+____________________________________________________________
+ oopsies !! (´ ∀ ` *) date or time doesn't exist, try again
+____________________________________________________________
+ oopsies !! (´ ∀ ` *) date or time doesn't exist, try again
 ____________________________________________________________
  oopsies !! (´ ∀ ` *) how can an event end before it starts?
 ____________________________________________________________
@@ -877,7 +889,7 @@ ____________________________________________________________
 ____________________________________________________________
  oopsies !! (´ ∀ ` *) that task is already in the list
 ____________________________________________________________
- oopsies !! (´ ∀ ` *) wrong format for date !! here’s an eg: 2019-12-02
+ oopsies !! (´ ∀ ` *) date doesn't exist, try again
 ____________________________________________________________
  oopsies !! (´ ∀ ` *) how can an event end before it starts?
 ____________________________________________________________

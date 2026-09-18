@@ -177,10 +177,13 @@ public class Parser {
         }
         requireNotEmpty(description, "pls gimme a desc before /by");
         requireNotEmpty(by, "pls gimme a date after /by");
+        if (!by.matches("[0-9]{4}-[0-9]{2}-[0-9]{2}")) {
+            throw new BobException("wrong format for date !! here’s an eg: 2019-12-02");
+        }
         try {
             return new Deadline(description, LocalDate.parse(by), priority);
         } catch (DateTimeParseException exception) {
-            throw new BobException("wrong format for date !! here’s an eg: 2019-12-02");
+            throw new BobException("date doesn't exist, try again");
         }
     }
 
@@ -210,6 +213,10 @@ public class Parser {
         requireNotEmpty(description, "pls gimme event desc before /from.");
         requireNotEmpty(from, "pls gimme start time after /from.");
         requireNotEmpty(to, "pls gimme end time after /to.");
+        String eventDateTimePattern = "[0-9]{4}-[0-9]{2}-[0-9]{2} [0-9]{4}";
+        if (!from.matches(eventDateTimePattern) || !to.matches(eventDateTimePattern)) {
+            throw new BobException("wrong format !! here’s an eg: 2019-12-02 1800");
+        }
         try {
             LocalDateTime start = LocalDateTime.parse(from, EVENT_INPUT_FORMAT);
             LocalDateTime end = LocalDateTime.parse(to, EVENT_INPUT_FORMAT);
@@ -218,7 +225,7 @@ public class Parser {
             }
             return new Event(description, start, end, priority);
         } catch (DateTimeParseException exception) {
-            throw new BobException("wrong format !! here’s an eg: 2019-12-02 1800");
+            throw new BobException("date or time doesn't exist, try again");
         }
     }
 
