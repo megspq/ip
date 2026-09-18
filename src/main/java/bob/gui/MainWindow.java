@@ -1,6 +1,8 @@
 package bob.gui;
 
 import bob.Bob;
+import javafx.animation.PauseTransition;
+import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
 import javafx.scene.control.ScrollPane;
@@ -8,6 +10,7 @@ import javafx.scene.control.TextField;
 import javafx.scene.image.Image;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.VBox;
+import javafx.util.Duration;
 
 /**
  * Controls Bob's main chat window.
@@ -57,5 +60,10 @@ public class MainWindow extends AnchorPane {
                 DialogBox.getUserDialog(input, userImage),
                 DialogBox.getBobDialog(response, isError ? bobErrorImage : bobImage, isError));
         userInput.clear();
+        if (input.equals("bye")) {
+            PauseTransition farewellDelay = new PauseTransition(Duration.seconds(2));
+            farewellDelay.setOnFinished(event -> Platform.exit());
+            farewellDelay.play();
+        }
     }
 }
