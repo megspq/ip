@@ -8,7 +8,7 @@ Bob is a desktop chatbot for managing tasks using simple typed commands.
 
 Type a command in the text box and press **Enter** or click **send**. Bob automatically saves task changes between sessions.
 
-Use lowercase command words and single spaces, with no spaces at the start or end. Replace the uppercase placeholders below with your own details. For `TASK_NUMBER`, use the number shown by `list` or `find` (starting at 1); numbers can change after deleting a task.
+Use lowercase command words. Bob accepts extra spaces at the start, end, or between words and saves task descriptions with single spaces. Replace the uppercase placeholders below with your own details. For `TASK_NUMBER`, use the number shown by `list` or `find` (starting at 1); numbers can change after deleting a task.
 
 ## Features
 
@@ -36,7 +36,7 @@ Adds a task due on a date in `YYYY-MM-DD` format.
 
 ### Add an event
 
-Adds an event with start and end times in `YYYY-MM-DD HHmm` format (24-hour time, no colon), with the end strictly after the start.
+Adds an event with start and end times in `YYYY-MM-DD HHmm` format (24-hour time, no colon). The end may be at the same time as the start or later.
 
 **Format:** `event DESCRIPTION /from START /to END`
 
@@ -68,7 +68,7 @@ Finds tasks whose descriptions contain the given text (case-sensitive), keeping 
 
 ### Say goodbye
 
-Displays a farewell; in the desktop app, close the window to exit (`bye` exits the console version).
+Displays a farewell and exits Bob. In the desktop app, the window closes after a short pause so you can read the farewell.
 
 **Command:** `bye`
 
