@@ -556,7 +556,7 @@ ____________________________________________________________
 ____________________________________________________________
  oopsies !! (´ ∀ ` *) pls gimme event desc before /from.
 ____________________________________________________________
- oopsies !! (´ ∀ ` *) use single spaces and no spaces at the start or end of a command
+ oopsies !! (´ ∀ ` *) pls gimme start time after /from.
 ____________________________________________________________
  oopsies !! (´ ∀ ` *) pls gimme end time after /to.
 ____________________________________________________________
@@ -851,7 +851,7 @@ ____________________________________________________________
 
 ## UI-021: Reject malformed commands and duplicate tasks
 
-**Aim:** Reject malformed commands and duplicate tasks.
+**Aim:** Normalize extra spaces while still rejecting duplicate tasks and invalid dates or markers.
 
 **Inputs:**
 
@@ -883,7 +883,9 @@ ____________________________________________________________
    [T][ ] read
  you now have 1 tasks in the list, get to it !!
 ____________________________________________________________
- oopsies !! (´ ∀ ` *) use single spaces and no spaces at the start or end of a command
+ okays task added:
+   [T][ ] read book
+ you now have 2 tasks in the list, get to it !!
 ____________________________________________________________
  oopsies !! (´ ∀ ` *) that task is already in the list
 ____________________________________________________________
@@ -897,6 +899,7 @@ ____________________________________________________________
 ____________________________________________________________
  here are your tasks (⌒‿⌒) 加油 !! :
  1.[T][ ] read
+ 2.[T][ ] read book
 ____________________________________________________________
   yippee glad to have helped (＠＾◡＾)
   byebye !! have a good day (๑˃ᴗ˂)ﻭ
@@ -1119,6 +1122,58 @@ ____________________________________________________________
 ____________________________________________________________
  here are your tasks (⌒‿⌒) 加油 !! :
  1.[E][ ] quick meeting (from: Sep 18 2026, 2:00 PM to: Sep 18 2026, 2:00 PM)
+____________________________________________________________
+  yippee glad to have helped (＠＾◡＾)
+  byebye !! have a good day (๑˃ᴗ˂)ﻭ
+____________________________________________________________
+```
+
+## UI-027: Accept extra spaces in valid commands
+
+**Aim:** Verify that leading, trailing, and repeated spaces are accepted and task descriptions are normalized.
+
+**Inputs:**
+
+```text
+  todo  play  game  
+deadline  submit  report  /by  2026-09-18  
+event  meeting  /from  2026-09-18  1400  /to  2026-09-18  1400
+find  play  game
+list
+  bye  
+```
+
+**Expected output:**
+
+```text
+ ____        _     
+| __ )  ___ | |__  
+|  _ \ / _ \| '_ \ 
+| |_) | (_) | |_) |
+|____/ \___/|_.__/ 
+
+hello im bob !!
+how can i help :)
+____________________________________________________________
+ okays task added:
+   [T][ ] play game
+ you now have 1 tasks in the list, get to it !!
+____________________________________________________________
+ okays task added:
+   [D][ ] submit report (by: Sep 18 2026)
+ you now have 2 tasks in the list, get to it !!
+____________________________________________________________
+ okays task added:
+   [E][ ] meeting (from: Sep 18 2026, 2:00 PM to: Sep 18 2026, 2:00 PM)
+ you now have 3 tasks in the list, get to it !!
+____________________________________________________________
+ here's what i found:
+ 1.[T][ ] play game
+____________________________________________________________
+ here are your tasks (⌒‿⌒) 加油 !! :
+ 1.[T][ ] play game
+ 2.[D][ ] submit report (by: Sep 18 2026)
+ 3.[E][ ] meeting (from: Sep 18 2026, 2:00 PM to: Sep 18 2026, 2:00 PM)
 ____________________________________________________________
   yippee glad to have helped (＠＾◡＾)
   byebye !! have a good day (๑˃ᴗ˂)ﻭ

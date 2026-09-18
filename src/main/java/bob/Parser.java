@@ -33,19 +33,14 @@ public class Parser {
     }
 
     /**
-     * Parses one line of input and validates its command syntax.
+     * Normalizes spacing, then parses one line of input and validates its command syntax.
      *
      * @param input command entered by the user
      * @return command data ready for Bob to execute
      * @throws BobException if the command or any of its arguments is invalid
      */
     public static Command parse(String input) throws BobException {
-        if (input.endsWith(" /priority ")) {
-            throw new BobException("pls end the task with /priority low, moderate, high, or none");
-        }
-        if (!input.equals(input.strip()) || input.contains("  ") || input.contains("\t")) {
-            throw new BobException("use single spaces and no spaces at the start or end of a command");
-        }
+        input = input.strip().replaceAll("[ \\t]+", " ");
         if (input.equals("bye")) {
             return new ExitCommand();
         } else if (input.equals("list")) {

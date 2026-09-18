@@ -60,7 +60,7 @@ public class MainWindow extends AnchorPane {
                 DialogBox.getUserDialog(input, userImage),
                 DialogBox.getBobDialog(response, isError ? bobErrorImage : bobImage, isError));
         userInput.clear();
-        if (input.equals("bye")) {
+        if (input.strip().equals("bye")) {
             PauseTransition farewellDelay = new PauseTransition(Duration.seconds(2));
             farewellDelay.setOnFinished(event -> Platform.exit());
             farewellDelay.play();

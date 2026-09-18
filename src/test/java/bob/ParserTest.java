@@ -17,6 +17,11 @@ class ParserTest {
     }
 
     @Test
+    void parse_exitCommandWithExtraWhitespace_returnsExitCommand() throws BobException {
+        assertInstanceOf(ExitCommand.class, Parser.parse(" \tbye\t "));
+    }
+
+    @Test
     void parse_validMarkCommand_returnsMarkCommand() throws BobException {
         assertInstanceOf(MarkCommand.class, Parser.parse("mark 2"));
     }
@@ -35,6 +40,11 @@ class ParserTest {
     void parse_validEvent_returnsAddCommand() throws BobException {
         assertInstanceOf(AddCommand.class,
                 Parser.parse("event meeting /from 2026-08-28 1400 /to 2026-08-28 1600"));
+    }
+
+    @Test
+    void parse_todoWithExtraWhitespace_returnsAddCommand() throws BobException {
+        assertInstanceOf(AddCommand.class, Parser.parse("  todo\t play  game  "));
     }
 
     @Test
