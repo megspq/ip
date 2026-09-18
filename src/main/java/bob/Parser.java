@@ -217,7 +217,7 @@ public class Parser {
         try {
             LocalDateTime start = LocalDateTime.parse(from, EVENT_INPUT_FORMAT);
             LocalDateTime end = LocalDateTime.parse(to, EVENT_INPUT_FORMAT);
-            if (!end.isAfter(start)) {
+            if (end.isBefore(start)) {
                 throw new BobException("how can an event end before it starts?");
             }
             return new Event(description, start, end, priority);

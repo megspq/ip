@@ -861,7 +861,7 @@ todo read  book
 todo read
 todo read
 deadline return /by 2026-02-30
-event meeting /from 2026-09-16 1400 /to 2026-09-16 1400
+event meeting /from 2026-09-16 1500 /to 2026-09-16 1400
 deadline return /by 2026-09-16 /by 2026-09-17
 list
 bye
@@ -1083,6 +1083,42 @@ ____________________________________________________________
 ____________________________________________________________
  here's what i found:
  1.[T][ ] buy groceries tdy/tmr
+____________________________________________________________
+  yippee glad to have helped (＠＾◡＾)
+  byebye !! have a good day (๑˃ᴗ˂)ﻭ
+____________________________________________________________
+```
+
+## UI-026: Allow an event with equal start and end times
+
+**Aim:** Verify that an event can start and end at the same time.
+
+**Inputs:**
+
+```text
+event quick meeting /from 2026-09-18 1400 /to 2026-09-18 1400
+list
+bye
+```
+
+**Expected output:**
+
+```text
+ ____        _     
+| __ )  ___ | |__  
+|  _ \ / _ \| '_ \ 
+| |_) | (_) | |_) |
+|____/ \___/|_.__/ 
+
+hello im bob !!
+how can i help :)
+____________________________________________________________
+ okays task added:
+   [E][ ] quick meeting (from: Sep 18 2026, 2:00 PM to: Sep 18 2026, 2:00 PM)
+ you now have 1 tasks in the list, get to it !!
+____________________________________________________________
+ here are your tasks (⌒‿⌒) 加油 !! :
+ 1.[E][ ] quick meeting (from: Sep 18 2026, 2:00 PM to: Sep 18 2026, 2:00 PM)
 ____________________________________________________________
   yippee glad to have helped (＠＾◡＾)
   byebye !! have a good day (๑˃ᴗ˂)ﻭ
