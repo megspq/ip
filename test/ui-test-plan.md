@@ -1052,3 +1052,39 @@ ____________________________________________________________
   byebye !! have a good day (๑˃ᴗ˂)ﻭ
 ____________________________________________________________
 ```
+
+## UI-025: Find a slash in a task description
+
+**Aim:** Verify that a slash is a valid search keyword when it appears in a task description.
+
+**Inputs:**
+
+```text
+todo buy groceries tdy/tmr
+find /
+bye
+```
+
+**Expected output:**
+
+```text
+ ____        _     
+| __ )  ___ | |__  
+|  _ \ / _ \| '_ \ 
+| |_) | (_) | |_) |
+|____/ \___/|_.__/ 
+
+hello im bob !!
+how can i help :)
+____________________________________________________________
+ okays task added:
+   [T][ ] buy groceries tdy/tmr
+ you now have 1 tasks in the list, get to it !!
+____________________________________________________________
+ here's what i found:
+ 1.[T][ ] buy groceries tdy/tmr
+____________________________________________________________
+  yippee glad to have helped (＠＾◡＾)
+  byebye !! have a good day (๑˃ᴗ˂)ﻭ
+____________________________________________________________
+```

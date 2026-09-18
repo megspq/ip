@@ -110,9 +110,6 @@ public class Parser {
     private static String parseKeyword(String input) throws BobException {
         String keyword = input.substring("find".length()).trim();
         requireNotEmpty(keyword, "can't find something if idk what it is");
-        if (keyword.startsWith("/")) {
-            throw new BobException("can't find something if idk what it is");
-        }
         return keyword;
     }
 
